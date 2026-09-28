@@ -1,8 +1,32 @@
-# HealthBox Architecture & Technical Design
+# HealthBoxD Architecture & Technical Design
+
+## Runtime Architecture
+
+HealthBoxD is a **multi-tenant modular monolith**. Domain-oriented modules are
+kept under `modules/` and expose application services through REST adapters;
+shared infrastructure lives under `config/`, `security/`, and `shared/`.
+
+- **Layered/hexagonal boundaries:** controllers are inbound adapters, services
+   are application/domain boundaries, repositories are outbound persistence
+   ports, and payment/SMS providers remain replaceable adapters.
+- **Tenant isolation:** JWT claims populate a request-scoped tenant context;
+   the transaction boundary sets PostgreSQL `app.tenant_id` with `set_config`.
+   Migration `V16__postgres_row_level_tenancy.sql` enables and forces RLS on
+   tenant tables, so database policy enforcement backs up service checks.
+- **Stateless security:** Spring Security uses stateless sessions and signed
+   JWTs. No server session or in-memory tenant state is required, so instances
+   can scale horizontally.
+- **Domain events:** modules publish typed events through the shared
+   `DomainEventPublisher` port and Spring adapter. Appointment and payment
+   workflows communicate without direct module coupling.
+- **Deployment:** Docker images are immutable and the compose deployment
+   declares two backend replicas, health checks, restart policy, and resource
+   limits. Use a reverse proxy/load balancer for the published backend port in
+   production.
 
 ## System Overview
 
-HealthBox is a **multi-tenant healthcare ERP** built on a modern Spring Boot + React stack with production-grade security, scalability, and reliability.
+HealthBoxD is a **multi-tenant healthcare ERP** built on a modern Spring Boot + React stack with production-grade security, scalability, and reliability.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -508,7 +532,7 @@ Response:
 
 ## Summary
 
-HealthBox combines:
+HealthBoxD combines:
 - **Simplicity:** Shared-DB multi-tenancy, no complex sharding logic
 - **Security:** JWT + ABAC, row-level isolation, audit trails
 - **Scalability:** Stateless backend, managed database, CDN for frontend

@@ -20,6 +20,18 @@ public class Prescription {
     private String patientPhno;
     private Long appointmentId;
 
+    @Column(name = "consultation_id")
+    private Long consultationId;
+
+    @Column(name = "patient_type", nullable = false)
+    private String patientType = "OP";
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Map<String, Object> inpatientDetails;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    private List<Map<String, Object>> injections;
+
     private String symptoms;
     private String bp;
     private String spo2;
@@ -30,6 +42,9 @@ public class Prescription {
     private List<Map<String, Object>> medicines;
 
     private String remarks;
+
+    private String diagnosis;
+    private String notes;
 
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> billing;
@@ -45,12 +60,26 @@ public class Prescription {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Column(nullable = false)
+    private String status = "FINALIZED";
+
+    private LocalDate nextVisitDate;
+    private LocalDateTime finalizedAt;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getPatientPhno() { return patientPhno; }
     public void setPatientPhno(String patientPhno) { this.patientPhno = patientPhno; }
     public Long getAppointmentId() { return appointmentId; }
     public void setAppointmentId(Long appointmentId) { this.appointmentId = appointmentId; }
+    public Long getConsultationId() { return consultationId; }
+    public void setConsultationId(Long consultationId) { this.consultationId = consultationId; }
+    public String getPatientType() { return patientType; }
+    public void setPatientType(String patientType) { this.patientType = patientType; }
+    public Map<String, Object> getInpatientDetails() { return inpatientDetails; }
+    public void setInpatientDetails(Map<String, Object> inpatientDetails) { this.inpatientDetails = inpatientDetails; }
+    public List<Map<String, Object>> getInjections() { return injections; }
+    public void setInjections(List<Map<String, Object>> injections) { this.injections = injections; }
     public String getSymptoms() { return symptoms; }
     public void setSymptoms(String symptoms) { this.symptoms = symptoms; }
     public String getBp() { return bp; }
@@ -65,6 +94,10 @@ public class Prescription {
     public void setMedicines(List<Map<String, Object>> medicines) { this.medicines = medicines; }
     public String getRemarks() { return remarks; }
     public void setRemarks(String remarks) { this.remarks = remarks; }
+    public String getDiagnosis() { return diagnosis; }
+    public void setDiagnosis(String diagnosis) { this.diagnosis = diagnosis; }
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
     public Map<String, Object> getBilling() { return billing; }
     public void setBilling(Map<String, Object> billing) { this.billing = billing; }
     public LocalDate getDate() { return date; }
@@ -75,4 +108,10 @@ public class Prescription {
     public void setDoctorPhno(String doctorPhno) { this.doctorPhno = doctorPhno; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    public LocalDate getNextVisitDate() { return nextVisitDate; }
+    public void setNextVisitDate(LocalDate nextVisitDate) { this.nextVisitDate = nextVisitDate; }
+    public LocalDateTime getFinalizedAt() { return finalizedAt; }
+    public void setFinalizedAt(LocalDateTime finalizedAt) { this.finalizedAt = finalizedAt; }
 }

@@ -6,4 +6,5 @@ import java.util.Optional;
 public interface HospitalRepository extends JpaRepository<Hospital, Long> {
     Optional<Hospital> findByCode(String code);
     boolean existsByCode(String code);
+    java.util.List<Hospital> findAllByOrderByCreatedAtDesc();
 }

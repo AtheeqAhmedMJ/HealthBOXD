@@ -26,11 +26,15 @@ public class JwtTokenProvider {
 
     /** Embeds the ABAC attributes (role, hospitalId, phno) as claims so every request carries tenant + role context. */
     public String generateToken(User user) {
+        return generateToken(user, user.getHospitalId());
+    }
+
+    public String generateToken(User user, Long hospitalId) {
         return Jwts.builder()
                 .subject(user.getUsername())
                 .claim("phno", user.getPhno())
                 .claim("role", user.getRole().name())
-                .claim("hospitalId", user.getHospitalId())
+                .claim("hospitalId", hospitalId)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(key)

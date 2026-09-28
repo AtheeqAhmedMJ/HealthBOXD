@@ -1,6 +1,6 @@
-# HealthBox Frontend
+# HealthBoxD Frontend
 
-React-based clinic management interface for HealthBox Healthcare ERP.
+React-based clinic management interface for HealthBoxD Healthcare ERP.
 
 ## Setup
 
@@ -19,7 +19,7 @@ Edit `.env.local` with your backend URLs:
 ```bash
 VITE_API_URL=http://localhost:8080/api
 VITE_AUTH_URL=http://localhost:8080/auth
-VITE_APP_NAME=HealthBox
+VITE_APP_NAME=HealthBoxD
 VITE_APP_ENVIRONMENT=development
 ```
 

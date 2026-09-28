@@ -1,4 +1,4 @@
-# HealthBox Complete Setup Instructions
+# HealthBoxD Complete Setup Instructions
 
 This is a **production-ready, fully functional Healthcare ERP** - everything you need is included.
 
@@ -28,21 +28,21 @@ docker --version      # Docker + Docker Compose
 
 ### Step 2: Start Database
 ```bash
-cd healthbox
+cd healthboxd
 docker-compose up -d db
 # Wait 5 seconds for database to be ready
 ```
 
 ### Step 3: Start Backend (Terminal 2)
 ```bash
-cd healthbox/backend
+cd healthboxd/backend
 ./mvnw spring-boot:run
 # Wait for: "Started HospitalManagementSystemApplication"
 ```
 
 ### Step 4: Start Frontend (Terminal 3)
 ```bash
-cd healthbox/frontend
+cd healthboxd/frontend
 npm install
 npm run dev
 # Open: http://localhost:5173
@@ -80,7 +80,7 @@ npm run dev
 ## File Organization
 
 ```
-healthbox/
+healthboxd/
 ├── README.md                    # Start here - Architecture overview
 ├── QUICKSTART.md                # This file - 5 minute setup
 ├── ARCHITECTURE.md              # System design (multi-tenancy, security)
@@ -399,7 +399,7 @@ Use **DEPLOYMENT_CHECKLIST.md** - 50+ verification points.
 
 ## License & Support
 
-HealthBox is production-ready and fully functional.
+HealthBoxD is production-ready and fully functional.
 
 Use it as:
 - **Starting point** for your healthcare SaaS
@@ -413,7 +413,7 @@ Use it as:
 
 ```bash
 # Start now:
-cd healthbox
+cd healthboxd
 docker-compose up -d db
 cd backend && ./mvnw spring-boot:run &
 cd frontend && npm install && npm run dev

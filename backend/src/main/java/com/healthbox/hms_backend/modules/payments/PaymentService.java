@@ -1,6 +1,7 @@
 package com.healthbox.hms_backend.modules.payments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
@@ -70,6 +71,13 @@ public class PaymentService {
         if (req.getPatientPhno() == null || req.getPatientName() == null) {
             throw new IllegalArgumentException("Patient phone number and name are required");
         }
+        if (req.getIdempotencyKey() != null && !req.getIdempotencyKey().isBlank()) {
+            var existing = orderRepo.findByIdempotencyKey(req.getIdempotencyKey());
+            if (existing.isPresent()) {
+                PaymentOrder po = existing.get();
+                return new CheckoutResponse(po.getId(), po.getRazorpayOrderId(), po.getAmountPaise(), "INR", keyId);
+            }
+        }
         if (req.getAppointmentId() != null) {
             var appt = appointmentRepo.findById(req.getAppointmentId())
                     .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
@@ -112,12 +120,16 @@ public class PaymentService {
             po.setDoctorPhno(me.getPhno());
             po.setPatientPhno(req.getPatientPhno());
             po.setAppointmentId(req.getAppointmentId());
+            po.setConsultationId(req.getConsultationId());
+            po.setPrescriptionId(req.getPrescriptionId());
             po.setRazorpayOrderId(order.get("id"));
             po.setAmountPaise(amountPaise);
             po.setPlatformFeePaise(platformFeePaise);
             po.setDoctorAmountPaise(amountPaise - platformFeePaise);
             po.setStatus("CREATED");
-            po.setPayload(objectMapper.convertValue(req, Map.class));
+            po.setIdempotencyKey(req.getIdempotencyKey());
+            po.setUpdatedAt(java.time.LocalDateTime.now());
+            po.setPayload(objectMapper.convertValue(req, new TypeReference<Map<String, Object>>() {}));
             orderRepo.save(po);
 
             return new CheckoutResponse(po.getId(), po.getRazorpayOrderId(), amountPaise, "INR", keyId);
@@ -130,7 +142,15 @@ public class PaymentService {
         PaymentOrder po = orderRepo.findByRazorpayOrderId(v.getRazorpayOrderId())
                 .orElseThrow(() -> new IllegalArgumentException("Unknown payment order"));
 
-        if ("PAID".equals(po.getStatus())) return; // idempotent — webhook may have already handled it
+        AppUserPrincipal actor = currentUser.get();
+        if (actor.getRole() == Role.PATIENT && !actor.getPhno().equals(po.getPatientPhno())) {
+            throw new AccessDeniedException("Payment does not belong to this patient");
+        }
+        if (actor.getRole() == Role.ADMIN && (!actor.getHospitalId().equals(po.getHospitalId()) || !actor.getPhno().equals(po.getDoctorPhno()))) {
+            throw new AccessDeniedException("Payment does not belong to this clinic");
+        }
+
+        if ("SUCCESS".equals(po.getStatus()) || "PAID".equals(po.getStatus())) return;
 
         JSONObject options = new JSONObject();
         options.put("razorpay_order_id", v.getRazorpayOrderId());
@@ -146,8 +166,27 @@ public class PaymentService {
 
         if (!valid) {
             po.setStatus("FAILED");
+            po.setFailureReason("Payment signature verification failed");
             orderRepo.save(po);
             throw new AccessDeniedException("Payment signature verification failed");
+        }
+
+        try {
+            var payment = razorpayClient.payments.fetch(v.getRazorpayPaymentId());
+            if (!v.getRazorpayOrderId().equals(payment.get("order_id"))
+                    || !"INR".equals(payment.get("currency"))
+                    || ((Number) payment.get("amount")).longValue() != po.getAmountPaise()
+                    || !"captured".equalsIgnoreCase(String.valueOf(payment.get("status")))) {
+                po.setStatus("FAILED");
+                po.setFailureReason("Payment amount, currency, order, or capture status did not match");
+                orderRepo.save(po);
+                throw new AccessDeniedException("Payment verification details did not match the order");
+            }
+        } catch (RazorpayException | ClassCastException e) {
+            po.setStatus("FAILED");
+            po.setFailureReason("Could not verify payment with provider");
+            orderRepo.save(po);
+            throw new IllegalArgumentException("Could not verify payment with provider");
         }
 
         materializer.materialize(po, v.getRazorpayPaymentId());

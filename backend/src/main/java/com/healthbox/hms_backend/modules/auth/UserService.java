@@ -29,4 +29,8 @@ public class UserService {
     public User findByUsername(String username) {
         return userRepository.findByUsername(username).orElse(null);
     }
+
+    public User findByPhone(String phone) {
+        return userRepository.findById(phone).orElse(null);
+    }
 }

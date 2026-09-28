@@ -37,14 +37,21 @@ export const authAPI = {
   registerPatient: (patientData) => 
     axios.post(`${AUTH_BASE_URL}/register-patient`, patientData),
   
-  requestOTP: (email, purpose) =>
-    axios.post(`${AUTH_BASE_URL}/otp/request`, { email, purpose }),
+  requestOTP: (email, purpose, phoneNumber) =>
+    axios.post(`${AUTH_BASE_URL}/otp/request`, { email, purpose, phoneNumber }),
+
+  verifyPatientOTP: (payload) =>
+    axios.post(`${AUTH_BASE_URL}/patient/otp/verify`, payload),
+  clinics: () => apiClient.get('/auth/clinics'),
+  switchClinic: (hospitalId) => apiClient.post(`/auth/clinics/${hospitalId}/switch`),
 };
 
 // ==================== APPOINTMENTS MODULE ====================
 export const appointmentsAPI = {
-  create: (appointmentData) => 
-    apiClient.post('/appointments', appointmentData),
+  create: (appointmentData) =>
+    apiClient.post('/appointments', appointmentData, {
+      headers: { 'Idempotency-Key': appointmentData.idempotencyKey || crypto.randomUUID() },
+    }),
   
   getAll: () => 
     apiClient.get('/appointments'),
@@ -54,9 +61,30 @@ export const appointmentsAPI = {
   
   getWithDetails: () => 
     apiClient.get('/appointments/with-details'),
+  changeStatus: (appointmentId, status) =>
+    apiClient.patch(`/appointments/${appointmentId}/status`, { status }),
   
   delete: (appointmentId) => 
     apiClient.delete(`/appointments/${appointmentId}`),
+};
+
+export const consultationsAPI = {
+  create: (data) => apiClient.post('/consultations', data),
+  get: (id) => apiClient.get(`/consultations/${id}`),
+  update: (id, data) => apiClient.patch(`/consultations/${id}`, data),
+  start: (id) => apiClient.post(`/consultations/${id}/start`),
+  awaitPayment: (id) => apiClient.post(`/consultations/${id}/await-payment`),
+  patientRecords: () => apiClient.get('/consultations/patient/me'),
+  recordsForPatient: (phoneNumber) => apiClient.get(`/consultations/patient/${phoneNumber}`),
+  recordsForDoctor: () => apiClient.get('/consultations/records'),
+};
+
+export const notificationsAPI = {
+  mine: () => apiClient.get('/notifications/me'),
+};
+
+export const medicationsAPI = {
+  search: (search) => apiClient.get('/medications', { params: { search, size: 20 } }),
 };
 
 // ==================== CHARGES MODULE ====================
@@ -107,7 +135,10 @@ export const billingAPI = {
 // ==================== PAYMENTS MODULE ====================
 export const paymentsAPI = {
   checkout: (paymentData) => 
-    apiClient.post('/payments/checkout', paymentData),
+    apiClient.post('/payments/checkout', {
+      ...paymentData,
+      idempotencyKey: paymentData.idempotencyKey || crypto.randomUUID(),
+    }),
   
   verify: (verifyData) => 
     apiClient.post('/payments/verify', verifyData),
@@ -130,20 +161,6 @@ export const paymentsAPI = {
 };
 
 // ==================== PHARMACY MODULE ====================
-export const pharmacyAPI = {
-  attachToPrescription: (prescriptionId, data) => 
-    apiClient.post(`/pharmacy/attach/${prescriptionId}`, data),
-  
-  dispense: (pharmacyId, data) => 
-    apiClient.patch(`/pharmacy/${pharmacyId}/dispense`, data),
-  
-  getAll: () => 
-    apiClient.get('/pharmacy'),
-  
-  getByPrescription: (prescriptionId) => 
-    apiClient.get(`/pharmacy/prescription/${prescriptionId}`),
-};
-
 // ==================== SCHEDULING MODULE ====================
 export const schedulingAPI = {
   create: (scheduleData) => 
@@ -151,6 +168,7 @@ export const schedulingAPI = {
   
   getAll: () => 
     apiClient.get('/schedule'),
+  getClinics: () => apiClient.get('/schedule/clinics'),
   
   getByDoctor: (phoneNumber) => 
     apiClient.get(`/schedule/doctor/${phoneNumber}`),
@@ -172,6 +190,9 @@ export const dashboardAPI = {
 export const superadminAPI = {
   getStats: () => 
     apiClient.get('/superadmin/stats'),
+  getCompanies: () => apiClient.get('/superadmin/companies'),
+  getApprovals: (status = 'PENDING') => apiClient.get('/superadmin/approvals', { params: { status } }),
+  reviewApproval: (id, status, reason = '') => apiClient.patch(`/superadmin/approvals/${id}`, { status, reason }),
 };
 
 export default apiClient;

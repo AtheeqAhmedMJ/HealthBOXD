@@ -18,6 +18,9 @@ public class OtpToken {
     @Column(nullable = false)
     private String email;
 
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
     @Column(nullable = false)
     private String otpHash;
 
@@ -28,6 +31,14 @@ public class OtpToken {
     private LocalDateTime expiresAt;
 
     private boolean consumed = false;
+
+    @Column(nullable = false)
+    private int attempts = 0;
+
+    private LocalDateTime lastAttemptAt;
+
+    @Column(nullable = false)
+    private String channel = "EMAIL";
 
     private LocalDateTime createdAt = LocalDateTime.now();
 }

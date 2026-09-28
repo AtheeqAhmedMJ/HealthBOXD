@@ -23,6 +23,9 @@ const [otpSent, setOtpSent] = useState(false);
 
 const [formData, setFormData] = useState({
 hospitalName: '',
+username: '',
+hospitalCode: '',
+location: '',
 email: '',
 phone: '',
 password: '',
@@ -50,7 +53,8 @@ setLoading(true);
 try {
   await authAPI.requestOTP(
     formData.email,
-    userType === 'hospital' ? 'REGISTER_ADMIN' : 'REGISTER_PATIENT'
+    userType === 'hospital' ? 'REGISTER_ADMIN' : 'REGISTER_PATIENT',
+    formData.phone
   );
 
   setOtpSent(true);
@@ -86,15 +90,22 @@ try {
   if (userType === 'hospital') {
     await authAPI.registerHospital({
       hospitalName: formData.hospitalName,
+      hospitalCode: formData.hospitalCode,
+      location: formData.location,
+      username: formData.username,
       email: formData.email,
-      phone: formData.phone,
+      adminPhno: formData.phone,
       password: formData.password,
       otp: formData.otp,
     });
 
   } else {
     await authAPI.registerPatient({
-      phone: formData.phone,
+      phoneNumber: formData.phone,
+      phno: formData.phone,
+      username: formData.username || formData.phone,
+      hospitalCode: formData.hospitalCode,
+      email: formData.email,
       password: formData.password,
       otp: formData.otp,
     });
@@ -233,7 +244,7 @@ return (
             <form onSubmit={handleRegister}>
 
               {/* HOSPITAL NAME */}
-              {(
+              {userType === 'hospital' && (
                 <div className="register-input-group">
 
                   <label>
@@ -258,6 +269,26 @@ return (
 
                   </div>
 
+                </div>
+              )}
+
+              {userType === 'hospital' && (
+                <div className="register-input-group">
+                  <label>CLINIC CODE</label>
+                  <div className="register-input-wrapper">
+                    <FiUser className="register-icon" size={20} />
+                    <input type="text" name="hospitalCode" value={formData.hospitalCode} onChange={handleChange} required placeholder="Unique clinic code" />
+                  </div>
+                </div>
+              )}
+
+              {userType === 'hospital' && (
+                <div className="register-input-group">
+                  <label>CLINIC LOCATION</label>
+                  <div className="register-input-wrapper">
+                    <FiUser className="register-icon" size={20} />
+                    <input type="text" name="location" value={formData.location} onChange={handleChange} required placeholder="City or full clinic address" />
+                  </div>
                 </div>
               )}
 
@@ -290,6 +321,16 @@ return (
 
                 </div>
               )}
+
+              <div className="register-input-group">
+                <label>{userType === 'hospital' ? 'USERNAME' : 'CLINIC CODE'}</label>
+                <div className="register-input-wrapper">
+                  <FiUser className="register-icon" size={20} />
+                  <input type="text" name={userType === 'hospital' ? 'username' : 'hospitalCode'} value={formData[userType === 'hospital' ? 'username' : 'hospitalCode']} onChange={handleChange} required placeholder={userType === 'hospital' ? 'Choose a username' : 'Clinic code'} />
+                </div>
+              </div>
+
+              {userType === 'patient' && <div className="register-input-group"><label>EMAIL (OPTIONAL)</label><div className="register-input-wrapper"><FiMail className="register-icon" size={20} /><input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="you@example.com" /></div></div>}
 
 
               {/* PHONE */}

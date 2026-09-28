@@ -3,6 +3,11 @@ import { FiSettings, FiUser, FiMail, FiPhone, FiLock, FiLogOut, FiSave, FiX, FiE
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
 import axios from 'axios';
+import { authAPI, setAuthToken } from '../../services/api';
+import ChargesPage from '../Charges/ChargesPage';
+import PaymentsPage from '../Payments/PaymentsPage';
+import SchedulingPage from '../Scheduling/SchedulingPage';
+import MedicalRecordsPage from '../Patients/MedicalRecordsPage';
 
 const SettingsPage = () => {
   const { user, setUser } = useContext(AppContext);
@@ -27,13 +32,16 @@ const SettingsPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [activeTab, setActiveTab] = useState('profile');
+  const [clinics, setClinics] = useState([]);
+  const [clinicMessage, setClinicMessage] = useState('');
 
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8080/api').replace(/\/api$/, '');
   const token = localStorage.getItem('authToken');
 
   // Load user profile on mount
   useEffect(() => {
     fetchUserProfile();
+    if (user?.role === 'ADMIN') authAPI.clinics().then(setClinics).catch(() => setClinics([]));
   }, []);
 
   const fetchUserProfile = async () => {
@@ -175,6 +183,19 @@ const SettingsPage = () => {
     }
   };
 
+  const switchClinic = async (hospitalId) => {
+    try {
+      const login = await authAPI.switchClinic(hospitalId);
+      setAuthToken(login.token);
+      const nextUser = { username: login.username, role: login.role, hospitalId: login.hospitalId, phno: login.phno };
+      localStorage.setItem('user', JSON.stringify(nextUser));
+      setClinicMessage('Clinic switched. Future active appointments in the previous clinic were paused.');
+      window.location.reload();
+    } catch (requestError) {
+      setClinicMessage(requestError.response?.data?.message || 'Could not switch clinic.');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50/50 via-pink-50/30 to-white p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
@@ -229,7 +250,38 @@ const SettingsPage = () => {
             <FiLock className="inline mr-2" size={18} />
             Security
           </button>
+          <button
+            onClick={() => setActiveTab('charges')}
+            className={`px-6 py-3 font-medium border-b-2 transition-all ${activeTab === 'charges' ? 'border-purple-600 text-purple-600' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
+          >
+            Charges
+          </button>
+          <button
+            onClick={() => setActiveTab('schedule')}
+            className={`px-6 py-3 font-medium border-b-2 transition-all ${activeTab === 'schedule' ? 'border-purple-600 text-purple-600' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
+          >
+            Schedule
+          </button>
+          <button
+            onClick={() => setActiveTab('records')}
+            className={`px-6 py-3 font-medium border-b-2 transition-all ${activeTab === 'records' ? 'border-purple-600 text-purple-600' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
+          >
+            Patient Records
+          </button>
+          <button
+            onClick={() => setActiveTab('payments')}
+            className={`px-6 py-3 font-medium border-b-2 transition-all ${activeTab === 'payments' ? 'border-purple-600 text-purple-600' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
+          >
+            Payment History
+          </button>
         </div>
+
+        {activeTab === 'charges' && <ChargesPage />}
+        {activeTab === 'payments' && <PaymentsPage />}
+        {activeTab === 'schedule' && <SchedulingPage />}
+        {activeTab === 'records' && <MedicalRecordsPage />}
+
+        {user?.role === 'ADMIN' && activeTab === 'profile' && clinics.length > 1 && <div className="mt-6 rounded-xl border border-white/20 bg-white/40 p-8 shadow-lg backdrop-blur-md"><h2 className="mb-2 text-2xl font-bold text-gray-900">Active clinic</h2><p className="mb-4 text-sm text-gray-600">Switching clinic pauses future active appointments in the clinic you leave.</p>{clinicMessage && <p className="mb-4 rounded bg-amber-50 p-3 text-amber-800">{clinicMessage}</p>}<div className="space-y-2">{clinics.map((clinic) => <button type="button" key={clinic.id} disabled={clinic.active || clinic.approvalStatus !== 'APPROVED'} onClick={() => switchClinic(clinic.id)} className={`flex w-full items-center justify-between rounded-lg border p-4 text-left ${clinic.active ? 'border-purple-300 bg-purple-50' : 'border-white/30 bg-white/70 hover:bg-white'}`}><span><strong className="block text-gray-900">{clinic.name}</strong><span className="text-sm text-gray-600">{clinic.location || clinic.code}</span></span><span className="text-xs font-semibold text-gray-500">{clinic.active ? 'ACTIVE' : clinic.approvalStatus}</span></button>)}</div></div>}
 
         {/* Profile Tab */}
         {activeTab === 'profile' && (
@@ -432,7 +484,7 @@ const SettingsPage = () => {
             <div className="bg-white/40 backdrop-blur-md rounded-xl shadow-lg border border-white/20 p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Sign Out</h2>
               <p className="text-gray-600 mb-6">
-                You'll be logged out of your account and will need to sign in again to access HealthBox.
+                You'll be logged out of your account and will need to sign in again to access HealthBoxD.
               </p>
               <button
                 onClick={handleLogout}

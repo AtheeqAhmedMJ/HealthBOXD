@@ -2,9 +2,12 @@ import React, { useState, useEffect, useContext } from 'react';
 import { FiDollarSign, FiRefreshCw, FiDownload, FiFilter, FiSearch } from 'react-icons/fi';
 import { AppContext } from '../../context/AppContext';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const BillingPage = () => {
   const { user } = useContext(AppContext);
+  const { selectedPatient } = useContext(AppContext);
+  const navigate = useNavigate();
   const [billings, setBillings] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -13,7 +16,7 @@ const BillingPage = () => {
   const [selectedBilling, setSelectedBilling] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
 
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
   const token = localStorage.getItem('authToken');
 
   // Fetch billings
@@ -43,25 +46,12 @@ const BillingPage = () => {
   };
 
   const handleDownload = async (billingId) => {
-    try {
-      const response = await axios.get(`${API_URL}/billing/${billingId}/pdf`, {
-        headers: { Authorization: `Bearer ${token}` },
-        responseType: 'blob'
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `billing-${billingId}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.parentElement.removeChild(link);
-    } catch (err) {
-      setError('Failed to download billing');
-      console.error('Error downloading billing:', err);
-    }
+    setSelectedBilling(billings.find((billing) => billing.id === billingId) || selectedBilling);
+    window.print();
   };
 
   const filteredBillings = billings.filter(billing =>
+    (!selectedPatient?.phno || billing.patientPhno === selectedPatient.phno) &&
     billing.id.toString().includes(searchTerm) ||
     billing.consultationId?.toString().includes(searchTerm) ||
     billing.patientName?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -83,7 +73,7 @@ const BillingPage = () => {
   };
 
   const formatCurrency = (amount) => {
-    return `₹${(amount / 100).toFixed(2)}`;
+    return `₹${Number(amount || 0).toFixed(2)}`;
   };
 
   const formatDate = (dateString) => {
@@ -112,6 +102,13 @@ const BillingPage = () => {
             Refresh
           </button>
         </div>
+
+        {selectedPatient && (
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-purple-200 bg-purple-50/70 p-4">
+            <div><p className="text-xs font-semibold uppercase text-purple-600">Current patient</p><p className="font-bold text-gray-900">{selectedPatient.name || selectedPatient.phno}</p></div>
+            {selectedPatient.consultationId && <button type="button" onClick={() => navigate(`/payments?consultationId=${selectedPatient.consultationId}&patientPhno=${encodeURIComponent(selectedPatient.phno)}`, { state: { patientName: selectedPatient.name } })} className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white">Open QR payment</button>}
+          </div>
+        )}
 
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-red-800">

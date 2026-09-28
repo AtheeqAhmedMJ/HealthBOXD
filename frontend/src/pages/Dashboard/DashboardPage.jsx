@@ -8,7 +8,10 @@ import {
   FiTrendingUp,
   FiCheckCircle,
   FiDollarSign,
+  FiFileText,
+  FiCreditCard,
 } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 
 const DashboardPage = () => {
   const [analytics, setAnalytics] = useState({
@@ -17,10 +20,13 @@ const DashboardPage = () => {
     totalPatients: 0,
     recurringPatientPercentage: 0,
     graphData: [],
+    paidRevenuePaise: 0,
+    doctorEarnings: {},
   });
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [patientSummary, setPatientSummary] = useState(null);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -46,9 +52,12 @@ const DashboardPage = () => {
                 appointments: count,
               })
             ),
+            paidRevenuePaise: data.paidRevenuePaise || 0,
+            doctorEarnings: data.doctorEarnings || {},
           });
         } else {
           const data = await dashboardAPI.getPatientSummary();
+          setPatientSummary(data);
 
           setAnalytics((prev) => ({
             ...prev,
@@ -85,6 +94,11 @@ const DashboardPage = () => {
     );
   }
 
+  if (JSON.parse(localStorage.getItem('user') || '{}')?.role === 'PATIENT') {
+    const next = patientSummary?.nextAppointment;
+    return <div className="min-h-screen p-4 md:p-8"><div className="max-w-5xl mx-auto"><h1 className="text-4xl font-bold text-gray-900 mb-2">Patient Dashboard</h1><p className="text-gray-600 mb-8">Your appointments, payments, and finalized records.</p>{error && <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg">{error}</div>}<div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8"><StatCard title="Upcoming appointments" value={patientSummary?.upcomingAppointments || 0} icon={FiCalendar} color="bg-[rgba(31,31,46,0.52)]" /><StatCard title="Finalized prescriptions" value={patientSummary?.totalPrescriptions || 0} icon={FiFileText} color="bg-[rgba(31,31,46,0.52)]" /><StatCard title="Pending payments" value={patientSummary?.pendingPayments || 0} icon={FiCreditCard} color="bg-[rgba(31,31,46,0.52)]" /></div><div className="bg-white/70 rounded-2xl p-6 shadow mb-6"><h2 className="text-xl font-bold mb-3">Next appointment</h2>{next ? <p>{next.date} {next.time} · {next.status} · Doctor {next.doctorPhno || 'To be assigned'}</p> : <p className="text-gray-600">No upcoming appointments.</p>}</div><div className="flex gap-3"><Link className="px-4 py-3 rounded-lg bg-gray-900 text-white" to="/appointments">Book appointment</Link><Link className="px-4 py-3 rounded-lg border" to="/medical-records">Medical records</Link><Link className="px-4 py-3 rounded-lg border" to="/payments">Payments</Link></div></div></div>;
+  }
+
   return (
     <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
@@ -111,7 +125,6 @@ const DashboardPage = () => {
             value={analytics.todayAppointments}
             icon={FiCalendar}
             color="bg-[rgba(31,31,46,0.52)]"
-            trend="+12% from yesterday"
           />
 
           <StatCard
@@ -119,7 +132,6 @@ const DashboardPage = () => {
             value={analytics.monthlyAppointments}
             icon={FiTrendingUp}
             color="bg-[rgba(31,31,46,0.52)]"
-            trend="+5% from last month"
           />
 
           <StatCard
@@ -127,7 +139,6 @@ const DashboardPage = () => {
             value={analytics.totalPatients}
             icon={FiUsers}
             color="bg-[rgba(31,31,46,0.52)]"
-            trend="+8 new patients"
           />
 
           <StatCard
@@ -135,7 +146,6 @@ const DashboardPage = () => {
             value={`${analytics.recurringPatientPercentage}%`}
             icon={FiCheckCircle}
             color="bg-[rgba(31,31,46,0.52)]"
-            trend="of total patient base"
           />
         </div>
 
@@ -163,48 +173,19 @@ const DashboardPage = () => {
                 </p>
 
                 <h3 className="text-2xl font-bold text-gray-900">
-                  ₹2,45,000
+                  ₹{(analytics.paidRevenuePaise / 100).toLocaleString('en-IN')}
                 </h3>
               </div>
             </div>
 
-            <p className="text-sm text-gray-600 mb-4">
-              This month
-            </p>
-
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-600">
-                  Consultations
-                </span>
-
-                <span className="font-semibold text-gray-900">
-                  ₹1,80,000
-                </span>
-              </div>
-
-              <div className="flex justify-between">
-                <span className="text-gray-600">
-                  Pharmacy
-                </span>
-
-                <span className="font-semibold text-gray-900">
-                  ₹45,000
-                </span>
-              </div>
-
-              <div className="flex justify-between">
-                <span className="text-gray-600">
-                  Procedures
-                </span>
-
-                <span className="font-semibold text-gray-900">
-                  ₹20,000
-                </span>
-              </div>
-            </div>
+            <p className="text-sm text-gray-600 mb-4">Verified successful payments</p>
           </div>
         </div>
+
+        <section className="mt-6 rounded-xl border border-white/20 bg-white/40 p-6 shadow-lg backdrop-blur-md">
+          <div className="mb-4 flex items-center justify-between"><div><h2 className="text-xl font-bold text-gray-900">Doctor earnings</h2><p className="text-sm text-gray-600">Verified payment totals for this clinic</p></div><span className="text-sm text-gray-600">{Object.keys(analytics.doctorEarnings).length} doctors</span></div>
+          {Object.keys(analytics.doctorEarnings).length === 0 ? <p className="text-gray-600">No verified earnings yet.</p> : <div className="grid grid-cols-1 gap-3 md:grid-cols-2">{Object.entries(analytics.doctorEarnings).map(([doctor, amount]) => <div className="flex items-center justify-between rounded-lg bg-white/70 p-4" key={doctor}><span className="font-medium text-gray-800">Doctor {doctor}</span><span className="font-bold text-emerald-700">₹{(amount / 100).toLocaleString('en-IN')}</span></div>)}</div>}
+        </section>
 
       </div>
     </div>

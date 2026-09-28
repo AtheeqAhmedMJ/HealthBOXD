@@ -1,5 +1,5 @@
 // src/context/AppContext.jsx
-import React, { createContext, useContext, useCallback, useState } from 'react';
+import React, { createContext, useContext, useCallback, useMemo, useState } from 'react';
 import { NOTIFICATION_TYPES } from '../constants';
 
 export const AppContext = createContext();
@@ -11,6 +11,29 @@ export const AppProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [user, setUser] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('user') || 'null'); } catch { return null; }
+  });
+  const [selectedPatient, setSelectedPatientState] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('selectedPatient') || 'null'); } catch { return null; }
+  });
+  const [workflow, setWorkflow] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('patientWorkflow') || '{}'); } catch { return {}; }
+  });
+
+  const setSelectedPatient = useCallback((patient) => {
+    setSelectedPatientState(patient);
+    if (patient) localStorage.setItem('selectedPatient', JSON.stringify(patient));
+    else localStorage.removeItem('selectedPatient');
+  }, []);
+
+  const updateWorkflow = useCallback((updates) => {
+    setWorkflow((current) => {
+      const next = { ...current, ...updates };
+      localStorage.setItem('patientWorkflow', JSON.stringify(next));
+      return next;
+    });
+  }, []);
 
   /**
    * Show notification
@@ -47,14 +70,14 @@ export const AppProvider = ({ children }) => {
   /**
    * Convenience methods
    */
-  const notify = {
+  const notify = useMemo(() => ({
     success: (message, duration) => showNotification(message, NOTIFICATION_TYPES.SUCCESS, duration),
     error: (message, duration) => showNotification(message, NOTIFICATION_TYPES.ERROR, duration),
     warning: (message, duration) => showNotification(message, NOTIFICATION_TYPES.WARNING, duration),
     info: (message, duration) => showNotification(message, NOTIFICATION_TYPES.INFO, duration),
-  };
+  }), [showNotification]);
 
-  const value = {
+  const value = useMemo(() => ({
     notifications,
     showNotification,
     removeNotification,
@@ -64,7 +87,13 @@ export const AppProvider = ({ children }) => {
     setIsLoading,
     sidebarOpen,
     setSidebarOpen,
-  };
+    user,
+    setUser,
+    selectedPatient,
+    setSelectedPatient,
+    workflow,
+    updateWorkflow,
+  }), [notifications, showNotification, removeNotification, clearNotifications, notify, isLoading, sidebarOpen, user, selectedPatient, setSelectedPatient, workflow, updateWorkflow]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

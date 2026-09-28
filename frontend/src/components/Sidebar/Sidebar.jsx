@@ -3,13 +3,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import './Sidebar.css';
 import {
   FiHome,
-  FiUserCheck,
   FiUsers,
   FiFileText,
   FiDollarSign,
   FiCreditCard,
   FiSettings,
   FiLogOut,
+  FiCalendar,
 } from 'react-icons/fi';
 
 const Sidebar = ({ userRole }) => {
@@ -25,15 +25,27 @@ const Sidebar = ({ userRole }) => {
     navigate('/login');
   };
 
-  const items = [
+  const patientItems = [
     { icon: FiHome, label: 'Dashboard', path: '/dashboard' },
-    { icon: FiUserCheck, label: 'Consultation', path: '/consultation' },
+    { icon: FiCalendar, label: 'Appointments', path: '/appointments' },
+    { icon: FiFileText, label: 'Prescription', path: '/prescriptions' },
+    { icon: FiFileText, label: 'Patient Records', path: '/medical-records' },
+    { icon: FiCreditCard, label: 'Payments', path: '/payments' },
+    { icon: FiSettings, label: 'Settings', path: '/settings' },
+  ];
+  const clinicItems = [
+    { icon: FiHome, label: 'Dashboard', path: '/dashboard' },
+    { icon: FiCalendar, label: 'Appointments', path: '/appointments' },
     { icon: FiUsers, label: 'Patients', path: '/patients' },
     { icon: FiFileText, label: 'Prescription', path: '/prescriptions' },
     { icon: FiDollarSign, label: 'Billing', path: '/billing' },
-    { icon: FiCreditCard, label: 'Payments', path: '/payments' },
-    ...(userRole === 'ADMIN' ? [{ icon: FiSettings, label: 'Settings', path: '/settings' }] : []),
+    { icon: FiSettings, label: 'Settings', path: '/settings' },
   ];
+  const superAdminItems = [
+    { icon: FiHome, label: 'Platform Overview', path: '/superadmin' },
+    { icon: FiSettings, label: 'Settings', path: '/settings' },
+  ];
+  const items = userRole === 'PATIENT' ? patientItems : userRole === 'SUPER_ADMIN' ? superAdminItems : clinicItems;
 
   return (
     <div

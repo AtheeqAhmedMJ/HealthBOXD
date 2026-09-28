@@ -33,6 +33,10 @@ public class BillingService {
         if (me.getRole() == Role.PATIENT && !me.getPhno().equals(phno)) {
             throw new AccessDeniedException("Not your own record");
         }
-        return billingRepo.findByPatientPhno(phno);
+        List<Billing> billings = billingRepo.findByPatientPhno(phno);
+        if (me.getRole() == Role.ADMIN) {
+            return billings.stream().filter(billing -> me.getHospitalId().equals(billing.getHospitalId())).toList();
+        }
+        return billings;
     }
 }

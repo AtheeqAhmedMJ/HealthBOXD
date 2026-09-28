@@ -1,19 +1,25 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { appointmentsAPI } from '../../services/api';
+import { useApp } from '../../context/AppContext';
 import { FiPlus, FiSearch, FiCalendar, FiUser, FiPhone, FiClock, FiTrash2 } from 'react-icons/fi';
 
 const AppointmentsPage = () => {
+  const navigate = useNavigate();
+  const { setSelectedPatient, updateWorkflow } = useApp();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
-    patientPhone: '',
-    doctorPhone: '',
-    appointmentDate: '',
+    patientPhno: '',
+    doctorPhno: '',
+    patientName: '',
+    date: '',
     appointmentTime: '',
     reason: '',
+    appointmentType: 'PRE_BOOKED',
   });
 
   useEffect(() => {
@@ -38,9 +44,10 @@ const AppointmentsPage = () => {
     try {
       await appointmentsAPI.create(formData);
       setFormData({
-        patientPhone: '',
-        doctorPhone: '',
-        appointmentDate: '',
+        patientPhno: '',
+        doctorPhno: '',
+        patientName: '',
+        date: '',
         appointmentTime: '',
         reason: '',
       });
@@ -63,8 +70,8 @@ const AppointmentsPage = () => {
   };
 
   const filteredAppointments = appointments.filter(app =>
-    app.patientPhone?.includes(searchTerm) ||
-    app.doctorPhone?.includes(searchTerm) ||
+    app.patientPhno?.includes(searchTerm) ||
+    app.doctorPhno?.includes(searchTerm) ||
     app.reason?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -118,8 +125,8 @@ const AppointmentsPage = () => {
                 <input
                   type="tel"
                   required
-                  value={formData.patientPhone}
-                  onChange={(e) => setFormData({ ...formData, patientPhone: e.target.value })}
+                  value={formData.patientPhno}
+                  onChange={(e) => setFormData({ ...formData, patientPhno: e.target.value })}
                   className="w-full px-4 py-3 bg-white/50 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                   placeholder="9876543210"
                 />
@@ -132,8 +139,8 @@ const AppointmentsPage = () => {
                 <input
                   type="tel"
                   required
-                  value={formData.doctorPhone}
-                  onChange={(e) => setFormData({ ...formData, doctorPhone: e.target.value })}
+                  value={formData.doctorPhno}
+                  onChange={(e) => setFormData({ ...formData, doctorPhno: e.target.value })}
                   className="w-full px-4 py-3 bg-white/50 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                   placeholder="9876543210"
                 />
@@ -146,8 +153,8 @@ const AppointmentsPage = () => {
                 <input
                   type="date"
                   required
-                  value={formData.appointmentDate}
-                  onChange={(e) => setFormData({ ...formData, appointmentDate: e.target.value })}
+                  value={formData.date}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                   className="w-full px-4 py-3 bg-white/50 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
               </div>
@@ -220,6 +227,16 @@ const AppointmentsPage = () => {
             filteredAppointments.map((appointment) => (
               <div
                 key={appointment.id}
+                onClick={() => {
+                  setSelectedPatient({
+                    id: appointment.patientId,
+                    name: appointment.patientName,
+                    phno: appointment.patientPhno,
+                    appointmentId: appointment.id,
+                  });
+                  updateWorkflow({ appointment: true });
+                  navigate('/patients');
+                }}
                 className="bg-white/40 backdrop-blur-md rounded-xl p-6 shadow-lg border border-white/20 hover:shadow-xl transition-shadow"
               >
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
@@ -227,7 +244,7 @@ const AppointmentsPage = () => {
                     <p className="text-xs text-gray-600 uppercase">Patient</p>
                     <p className="flex items-center gap-2 text-gray-900 font-semibold mt-1">
                       <FiPhone size={16} className="text-purple-600" />
-                      {appointment.patientPhone}
+                      {appointment.patientPhno}
                     </p>
                   </div>
 
@@ -235,7 +252,7 @@ const AppointmentsPage = () => {
                     <p className="text-xs text-gray-600 uppercase">Doctor</p>
                     <p className="flex items-center gap-2 text-gray-900 font-semibold mt-1">
                       <FiUser size={16} className="text-purple-600" />
-                      {appointment.doctorPhone}
+                      {appointment.doctorPhno || 'Unassigned'}
                     </p>
                   </div>
 
@@ -243,16 +260,28 @@ const AppointmentsPage = () => {
                     <p className="text-xs text-gray-600 uppercase">Date & Time</p>
                     <p className="flex items-center gap-2 text-gray-900 font-semibold mt-1">
                       <FiClock size={16} className="text-purple-600" />
-                      {new Date(appointment.appointmentDate).toLocaleDateString()} {appointment.appointmentTime}
+                      {new Date(appointment.date).toLocaleDateString()} {appointment.appointmentTime}
                     </p>
                   </div>
 
                   <div>
                     <p className="text-xs text-gray-600 uppercase">Reason</p>
-                    <p className="text-gray-700 mt-1 line-clamp-2">{appointment.reason}</p>
+                    <p className="text-gray-700 mt-1 line-clamp-2">{appointment.reason || 'General consultation'}</p>
                   </div>
 
                   <div className="flex justify-end">
+                    <button
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setSelectedPatient({ name: appointment.patientName, phno: appointment.patientPhno, appointmentId: appointment.id });
+                        updateWorkflow({ appointment: true });
+                        navigate(`/consultation/editor?phno=${encodeURIComponent(appointment.patientPhno)}&appointmentId=${appointment.id}`);
+                      }}
+                      className="p-3 bg-purple-500/20 hover:bg-purple-500/30 text-purple-700 rounded-lg transition-all"
+                      aria-label="Open consultation"
+                    >
+                      <FiUser size={20} />
+                    </button>
                     <button
                       onClick={() => handleDeleteAppointment(appointment.id)}
                       className="p-3 bg-red-500/20 hover:bg-red-500/30 text-red-600 rounded-lg transition-all"

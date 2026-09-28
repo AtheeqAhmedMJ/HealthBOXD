@@ -14,9 +14,10 @@ export const USER_ROLES = {
  * Appointment Status
  */
 export const APPOINTMENT_STATUS = {
-  SCHEDULED: 'SCHEDULED',
-  CONFIRMED: 'CONFIRMED',
-  IN_PROGRESS: 'IN_PROGRESS',
+  BOOKED: 'BOOKED',
+  SCHEDULED: 'BOOKED',
+  CHECKED_IN: 'CHECKED_IN',
+  IN_CONSULTATION: 'IN_CONSULTATION',
   COMPLETED: 'COMPLETED',
   CANCELLED: 'CANCELLED',
   NO_SHOW: 'NO_SHOW',
@@ -26,9 +27,12 @@ export const APPOINTMENT_STATUS = {
  * Payment Status
  */
 export const PAYMENT_STATUS = {
+  CREATED: 'CREATED',
   PENDING: 'PENDING',
-  PROCESSING: 'PROCESSING',
-  COMPLETED: 'COMPLETED',
+  SUCCESS: 'SUCCESS',
+  PAID: 'SUCCESS',
+  PROCESSING: 'PENDING',
+  COMPLETED: 'SUCCESS',
   FAILED: 'FAILED',
   REFUNDED: 'REFUNDED',
   CANCELLED: 'CANCELLED',
@@ -135,12 +139,6 @@ export const API_ENDPOINTS = {
     LIST: '/payments',
     GET: '/payments',
   },
-  PHARMACY: {
-    LIST: '/pharmacy',
-    ATTACH: '/pharmacy/attach',
-    DISPENSE: '/pharmacy',
-    GET_BY_PRESCRIPTION: '/pharmacy/prescription',
-  },
   SCHEDULING: {
     LIST: '/schedule',
     CREATE: '/schedule',
@@ -170,7 +168,7 @@ export const REGEX_PATTERNS = {
   PHONE: /^[6-9]\d{9}$/,
   PASSWORD: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
   OTP: /^\d{6}$/,
-  URL: /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/,
+  URL: /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/,
 };
 
 /**

@@ -1,4 +1,4 @@
-# HealthBox - Multi-Tenant Healthcare ERP
+# HealthBoxD - Multi-Tenant Healthcare ERP
 
 A production-ready, Spring Boot + React-based Hospital Management System with multi-tenancy, tenant isolation, and full HIPAA-aligned architecture.
 
@@ -63,7 +63,7 @@ RAZORPAY_WEBHOOK_SECRET=
 PLATFORM_FEE_PAISE=75
 SUPERADMIN_USERNAME=superadmin
 SUPERADMIN_PASSWORD=SecurePassword123!
-SUPERADMIN_EMAIL=admin@healthbox.io
+SUPERADMIN_EMAIL=admin@healthboxd.io
 SUPERADMIN_PHNO=+919999999999
 ```
 
@@ -71,7 +71,7 @@ SUPERADMIN_PHNO=+919999999999
 ```bash
 VITE_API_URL=http://localhost:8080/api
 VITE_AUTH_URL=http://localhost:8080/auth
-VITE_APP_NAME=HealthBox
+VITE_APP_NAME=HealthBoxD
 VITE_APP_ENVIRONMENT=development
 ```
 
@@ -234,4 +234,4 @@ npm run build
 
 ## License
 
-Proprietary - HealthBox
+Proprietary - HealthBoxD

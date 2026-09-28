@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "appointments")
@@ -16,6 +17,9 @@ public class Appointment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     @Column(nullable = false)
     private String patientPhno;
 
@@ -24,6 +28,12 @@ public class Appointment {
     @Column(nullable = false)
     private LocalDate date;
 
+    @Column(name = "appointment_time")
+    private LocalTime appointmentTime;
+
+    @Column(length = 500)
+    private String reason;
+
     @Column(name = "hospital_id", nullable = false)
     private Long hospitalId;
 
@@ -31,8 +41,17 @@ public class Appointment {
     private String doctorPhno; // ownership attribute for ABAC
 
     @Column(nullable = false)
-    private String status = "SCHEDULED"; // SCHEDULED, COMPLETED, CANCELLED
+    private String status = "BOOKED";
+
+    @Column(name = "appointment_type", nullable = false)
+    private String appointmentType = "PRE_BOOKED";
+
+    @Column(name = "idempotency_key", length = 100)
+    private String idempotencyKey;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt = LocalDateTime.now();
 }

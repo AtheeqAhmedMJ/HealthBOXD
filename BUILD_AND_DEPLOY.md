@@ -1,6 +1,6 @@
-# Build & Deploy HealthBox
+# Build & Deploy HealthBoxD
 
-Step-by-step instructions for building and deploying HealthBox locally and to production.
+Step-by-step instructions for building and deploying HealthBoxD locally and to production.
 
 ## Prerequisites
 
@@ -96,13 +96,13 @@ cd frontend && npm run dev
 cd backend
 
 # Build
-docker build -t healthbox-backend:latest .
+docker build -t healthboxd-backend:latest .
 
 # Build with version tag
-docker build -t healthbox-backend:1.0.0 .
+docker build -t healthboxd-backend:1.0.0 .
 
 # Verify
-docker image ls | grep healthbox-backend
+docker image ls | grep healthboxd-backend
 ```
 
 ### Build Frontend Image
@@ -111,13 +111,13 @@ docker image ls | grep healthbox-backend
 cd frontend
 
 # Build
-docker build -t healthbox-frontend:latest .
+docker build -t healthboxd-frontend:latest .
 
 # Build with version tag  
-docker build -t healthbox-frontend:1.0.0 .
+docker build -t healthboxd-frontend:1.0.0 .
 
 # Verify
-docker image ls | grep healthbox-frontend
+docker image ls | grep healthboxd-frontend
 ```
 
 ### Run Docker Compose Stack
@@ -168,8 +168,8 @@ java -Xmx1g -Xms256m \
 cd frontend
 
 # Build production bundle
-VITE_API_URL="https://api.healthbox.io/api" \
-VITE_AUTH_URL="https://api.healthbox.io/auth" \
+VITE_API_URL="https://api.healthboxd.io/api" \
+VITE_AUTH_URL="https://api.healthboxd.io/auth" \
 npm run build
 
 # Verify build
@@ -190,7 +190,7 @@ gzip -c dist/index.html | wc -c
    - Connect GitHub repository
 
 2. **Create Web Service**
-   - Name: `healthbox-backend`
+   - Name: `healthboxd-backend`
    - Environment: Docker
    - Build Command: (use Dockerfile)
    - Start Command: (automatic from Dockerfile)
@@ -209,7 +209,7 @@ gzip -c dist/index.html | wc -c
    RAZORPAY_WEBHOOK_SECRET=...
    SUPERADMIN_USERNAME=superadmin
    SUPERADMIN_PASSWORD=GenerateSecurePassword!
-   SUPERADMIN_EMAIL=admin@healthbox.io
+   SUPERADMIN_EMAIL=admin@healthboxd.io
    SUPERADMIN_PHNO=+919999999999
    ```
 

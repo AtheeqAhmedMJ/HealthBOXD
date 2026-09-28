@@ -3,6 +3,7 @@ package com.healthbox.hms_backend.modules.payments;
 import com.healthbox.hms_backend.modules.payments.dto.CheckoutRequest;
 import com.healthbox.hms_backend.modules.payments.dto.CheckoutResponse;
 import com.healthbox.hms_backend.modules.payments.dto.VerifyRequest;
+import com.healthbox.hms_backend.modules.payments.dto.PaymentResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,12 +44,18 @@ public class PaymentController {
     }
 
     @GetMapping
-    public List<PaymentOrder> getAll() {
-        return service.getAll();
+    public List<PaymentResponse> getAll() {
+        return service.getAll().stream().map(this::response).toList();
     }
 
     @GetMapping("/{id}")
-    public PaymentOrder getById(@PathVariable Long id) {
-        return service.getById(id);
+    public PaymentResponse getById(@PathVariable Long id) {
+        return response(service.getById(id));
+    }
+
+    private PaymentResponse response(PaymentOrder payment) {
+        return new PaymentResponse(payment.getId(), payment.getRazorpayOrderId(), payment.getRazorpayPaymentId(),
+                payment.getAppointmentId(), payment.getConsultationId(), payment.getPrescriptionId(),
+                payment.getAmountPaise(), payment.getStatus(), payment.getCreatedAt(), payment.getPaidAt());
     }
 }

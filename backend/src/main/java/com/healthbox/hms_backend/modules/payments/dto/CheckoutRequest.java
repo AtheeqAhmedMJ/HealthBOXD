@@ -8,12 +8,15 @@ import java.util.Map;
 @Getter
 @Setter
 public class CheckoutRequest {
+    private String idempotencyKey;
     // identity
     private String patientPhno;
     private String patientName;
     private Integer patientAge;
     private String patientGender;
     private Long appointmentId;
+    private Long consultationId;
+    private Long prescriptionId;
 
     // charges: either pick from the admin's rate card, or supply a one-off amount
     private List<Long> chargeItemIds;

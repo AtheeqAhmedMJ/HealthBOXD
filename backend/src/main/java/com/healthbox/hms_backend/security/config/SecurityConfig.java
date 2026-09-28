@@ -45,10 +45,14 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
+                    .requestMatchers("/auth/login", "/auth/otp/request", "/auth/register-hospital",
+                        "/auth/register-patient", "/auth/patient/otp/verify", "/auth/dev/**").permitAll()
+                    .requestMatchers("/auth/profile", "/auth/change-password", "/auth/logout").authenticated()
                     .requestMatchers("/error").permitAll()
                         .requestMatchers("/api/payments/webhook").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/actuator/info", "/actuator/metrics", "/actuator/prometheus").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

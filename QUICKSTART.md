@@ -1,6 +1,6 @@
-# HealthBox Quick Start Guide
+# HealthBoxD Quick Start Guide
 
-Get HealthBox running locally in 5 minutes.
+Get HealthBoxD running locally in 5 minutes.
 
 ## Prerequisites
 - Docker & Docker Compose (recommended for DB)
@@ -13,7 +13,7 @@ Get HealthBox running locally in 5 minutes.
 ### 1. Clone & Configure
 ```bash
 git clone <repository-url>
-cd healthbox
+cd healthboxd
 
 # Copy environment file
 cp .env.example .env
@@ -86,7 +86,7 @@ cd frontend && npm install && npm run dev
 ## Project Structure
 
 ```
-healthbox/
+healthboxd/
 ├── backend/                # Spring Boot API
 │   ├── src/main/java/     # Source code (65 Java files)
 │   ├── src/main/resources/
@@ -186,7 +186,7 @@ If `SUPERADMIN_*` env vars are set, auto-bootstrap creates:
 ```
 Username: superadmin
 Password: SecurePassword123!
-Email: admin@healthbox.io
+Email: admin@healthboxd.io
 Phone: +919999999999
 ```
 

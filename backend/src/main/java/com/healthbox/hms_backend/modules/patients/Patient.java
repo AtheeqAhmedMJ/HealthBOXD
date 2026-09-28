@@ -14,7 +14,11 @@ import java.time.LocalDateTime;
 public class Patient {
 
     @Id
-    @Column(name = "phno", nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "patient_id", nullable = false, updatable = false)
+    private Long id;
+
+    @Column(name = "phno", nullable = false, unique = true, length = 20)
     private String phno;
 
     @Column(nullable = false)

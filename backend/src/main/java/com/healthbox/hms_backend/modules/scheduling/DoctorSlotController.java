@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import com.healthbox.hms_backend.modules.tenant.Hospital;
 
 @RestController
 @RequestMapping("/api/schedule")
@@ -24,6 +25,11 @@ public class DoctorSlotController {
     @GetMapping
     public List<DoctorSlot> getAll() {
         return service.getAll();
+    }
+
+    @GetMapping("/clinics")
+    public List<Hospital> getClinics() {
+        return service.getClinics();
     }
 
     @GetMapping("/doctor/{phno}")

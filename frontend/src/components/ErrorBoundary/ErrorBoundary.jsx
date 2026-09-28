@@ -119,7 +119,7 @@ export class ErrorBoundary extends React.Component {
             {/* Contact Support */}
             <p className="text-xs text-gray-500 text-center mt-6">
               If the problem persists,{' '}
-              <a href="mailto:support@healthbox.com" className="text-purple-600 hover:underline">
+              <a href="mailto:support@healthboxd.com" className="text-purple-600 hover:underline">
                 contact support
               </a>
             </p>

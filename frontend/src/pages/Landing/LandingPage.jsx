@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import Background from '../../components/Background/Background';
 import Logo from '../../components/Logo/Logo';
 
 import './LandingPage.css';
@@ -17,8 +16,6 @@ const LandingPage = () => {
 
   return (
     <main className="landing-page">
-      <Background />
-
       <section className="landing-content">
 
         <Logo
@@ -29,12 +26,12 @@ const LandingPage = () => {
 
         <div
           className={`
-            healthbox-text-container
-            ${isHovered ? 'healthbox-text-visible' : ''}
+            healthboxd-text-container
+            ${isHovered ? 'healthboxd-text-visible' : ''}
           `}
         >
           <h1 className="landing-title">
-            HEALTH BOX
+            HEALTHBOXD
           </h1>
 
           <p className="landing-subtitle">

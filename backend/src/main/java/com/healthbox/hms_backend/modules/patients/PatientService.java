@@ -25,13 +25,13 @@ public class PatientService {
         AppUserPrincipal me = currentUser.get();
         return switch (me.getRole()) {
             case ADMIN -> repo.findByHospitalId(me.getHospitalId());
-            case PATIENT -> repo.findById(me.getPhno()).map(List::of).orElse(List.of());
+            case PATIENT -> repo.findByPhno(me.getPhno()).map(List::of).orElse(List.of());
             case SUPER_ADMIN -> throw new AccessDeniedException("Use /api/superadmin endpoints instead");
         };
     }
 
     public Patient getByPhno(String phno) {
-        Patient p = repo.findById(phno).orElseThrow(() -> new RuntimeException("Patient not found"));
+        Patient p = repo.findByPhno(phno).orElseThrow(() -> new RuntimeException("Patient not found"));
         assertAccessible(p);
         return p;
     }

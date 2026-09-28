@@ -19,13 +19,19 @@ public class AppointmentController {
 
     // ✅ Create appointment with error handling
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody Appointment a) {
+    public ResponseEntity<?> create(@RequestBody Appointment a, @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
         try {
+            a.setIdempotencyKey(idempotencyKey);
             return ResponseEntity.status(HttpStatus.CREATED).body(service.create(a));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("error", e.getMessage()));
         }
+    }
+
+    @PatchMapping("/{id}/status")
+    public Appointment changeStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        return service.changeStatus(id, body.get("status"));
     }
 
     // ✅ Get all appointments

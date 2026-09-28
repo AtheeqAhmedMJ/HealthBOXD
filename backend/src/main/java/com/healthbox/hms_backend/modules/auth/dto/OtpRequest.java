@@ -7,5 +7,6 @@ import lombok.Setter;
 @Setter
 public class OtpRequest {
     private String email;
+    private String phoneNumber;
     private String purpose; // REGISTER_ADMIN or REGISTER_PATIENT
 }

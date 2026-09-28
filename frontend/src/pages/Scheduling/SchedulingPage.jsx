@@ -1,20 +1,16 @@
-import React from 'react';
-import { FiCalendar } from 'react-icons/fi';
+import React, { useEffect, useState } from 'react';
+import { schedulingAPI } from '../../services/api';
 
 const SchedulingPage = () => {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50/50 via-pink-50/30 to-white p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-900 flex items-center gap-3 mb-8">
-          <FiCalendar className="text-purple-600" />
-          Scheduling
-        </h1>
-        <div className="bg-white/40 backdrop-blur-md rounded-xl p-6 shadow-lg border border-white/20">
-          <p className="text-gray-600">Scheduling module is being implemented</p>
-        </div>
-      </div>
-    </div>
-  );
+  const [slots, setSlots] = useState([]);
+  const [clinics, setClinics] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [form, setForm] = useState({ hospitalId: '', dayOfWeek: 1, startTime: '09:00', endTime: '17:00' });
+  const [message, setMessage] = useState('');
+  const load = async () => { setLoading(true); try { const data = await schedulingAPI.getAll(); setSlots(Array.isArray(data) ? data : []); } catch (error) { setMessage(error.response?.data?.message || 'Could not load schedule.'); } finally { setLoading(false); } };
+  const loadClinics = async () => { try { const data = await schedulingAPI.getClinics(); const available = Array.isArray(data) ? data : []; setClinics(available); if (available[0]) setForm((current) => ({ ...current, hospitalId: available[0].id })); } catch (error) { setMessage(error.response?.data?.message || 'Could not load clinics.'); } };
+  useEffect(() => { load(); loadClinics(); }, []);
+  const create = async (event) => { event.preventDefault(); try { await schedulingAPI.create(form); await load(); } catch (error) { setMessage(error.response?.data?.message || 'Could not create slot.'); } };
+  return <section className="rounded-xl border border-white/20 bg-white/40 p-6 shadow-lg backdrop-blur-md"><h2 className="mb-2 text-2xl font-bold text-gray-900">Doctor Schedule</h2><p className="mb-6 text-sm text-gray-600">Manage available appointment slots from Settings.</p>{message && <p className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-red-700">{message}</p>}<form onSubmit={create} className="mb-8 grid grid-cols-1 gap-3 md:grid-cols-4"><select required className="rounded-lg border border-gray-200 bg-white p-3 md:col-span-2" value={form.hospitalId} onChange={(event) => setForm({ ...form, hospitalId: Number(event.target.value) })}><option value="">Select clinic</option>{clinics.map((clinic) => <option value={clinic.id} key={clinic.id}>{clinic.name}{clinic.location ? ` · ${clinic.location}` : ''}</option>)}</select><select className="rounded-lg border border-gray-200 bg-white p-3" value={form.dayOfWeek} onChange={(event) => setForm({ ...form, dayOfWeek: Number(event.target.value) })}>{['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map((day, index) => <option value={index} key={day}>{day}</option>)}</select><input className="rounded-lg border border-gray-200 bg-white p-3" type="time" value={form.startTime} onChange={(event) => setForm({ ...form, startTime: event.target.value })} /><input className="rounded-lg border border-gray-200 bg-white p-3" type="time" value={form.endTime} onChange={(event) => setForm({ ...form, endTime: event.target.value })} /><button className="rounded-lg bg-gray-900 p-3 font-semibold text-white transition-colors hover:bg-gray-700">Add slot</button></form><div className="space-y-3">{loading ? <p className="rounded-lg bg-white/60 p-4 text-gray-600">Loading schedule...</p> : slots.length === 0 ? <p className="rounded-lg bg-white/60 p-4 text-gray-600">No schedule slots configured.</p> : slots.map((slot) => { const clinic = clinics.find((item) => item.id === slot.hospitalId); return <div className="rounded-lg border border-white/30 bg-white/70 p-4 font-medium text-gray-800" key={slot.id}><p>{clinic?.name || 'Clinic'}{clinic?.location ? ` · ${clinic.location}` : ''}</p><p className="text-sm text-gray-600">{['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][slot.dayOfWeek]} · {slot.startTime} - {slot.endTime}</p></div>; })}</div></section>;
 };
-
 export default SchedulingPage;

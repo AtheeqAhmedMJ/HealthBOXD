@@ -7,6 +7,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findByUsername(String username);
     List<User> findByHospitalId(Long hospitalId);
+    List<User> findByHospitalIdAndRole(Long hospitalId, Role role);
     List<User> findByRole(Role role);
     long countByRole(Role role);
     boolean existsByRole(Role role);

@@ -33,6 +33,12 @@ public class PaymentOrder {
     @Column(name = "appointment_id")
     private Long appointmentId;
 
+    @Column(name = "consultation_id")
+    private Long consultationId;
+
+    @Column(name = "prescription_id")
+    private Long prescriptionId;
+
     @Column(name = "razorpay_order_id", nullable = false, unique = true)
     private String razorpayOrderId;
 
@@ -50,6 +56,14 @@ public class PaymentOrder {
 
     @Column(nullable = false)
     private String status = "CREATED"; // CREATED, PAID, FAILED
+
+    @Column(name = "idempotency_key", length = 100)
+    private String idempotencyKey;
+
+    @Column(name = "failure_reason")
+    private String failureReason;
+
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     // holds the clinical/patient draft (symptoms, meds, vitals, remarks, patient demographics)
     @JdbcTypeCode(SqlTypes.JSON)

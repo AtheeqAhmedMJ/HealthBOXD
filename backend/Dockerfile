@@ -35,6 +35,6 @@ ENTRYPOINT ["java", \
     "-XX:MaxGCPauseMillis=200", \
     "-XX:+UnlockExperimentalVMOptions", \
     "-XX:G1NewCollectionPercentThreshold=30", \
-    "-Dspring.profiles.active=production", \
+    "-Dspring.profiles.active=prod", \
     "-jar", \
     "app.jar"]

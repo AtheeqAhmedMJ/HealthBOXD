@@ -32,7 +32,7 @@
   z-index: 10;
 }
 
-.healthbox-text-container {
+.healthboxd-text-container {
   display: flex;
 
   flex-direction: column;
@@ -52,7 +52,7 @@
   pointer-events: none;
 }
 
-.healthbox-text-visible {
+.healthboxd-text-visible {
   opacity: 1;
 
   transform: translateY(0);

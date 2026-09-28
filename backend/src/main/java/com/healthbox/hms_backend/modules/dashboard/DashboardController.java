@@ -49,11 +49,19 @@ public class DashboardController {
         List<PaymentOrder> myPayments = paymentOrderRepo.findByPatientPhno(me.getPhno());
 
         Map<String, Object> summary = new LinkedHashMap<>();
-        summary.put("hasProfile", patientRepo.findById(me.getPhno()).isPresent());
+        summary.put("hasProfile", patientRepo.findByPhno(me.getPhno()).isPresent());
         summary.put("upcomingAppointments", myAppointments.stream().filter(a -> !a.getDate().isBefore(today)).count());
         summary.put("totalPrescriptions", prescriptionRepo.findByPatientPhno(me.getPhno()).size());
         summary.put("pendingPayments", myPayments.stream().filter(p -> "CREATED".equals(p.getStatus())).count());
-        summary.put("totalPaidPayments", myPayments.stream().filter(p -> "PAID".equals(p.getStatus())).count());
+        summary.put("totalPaidPayments", myPayments.stream().filter(p -> "SUCCESS".equals(p.getStatus()) || "PAID".equals(p.getStatus())).count());
+        myAppointments.stream().filter(a -> !a.getDate().isBefore(today))
+            .min(Comparator.comparing(Appointment::getDate).thenComparing(Appointment::getAppointmentTime,
+                Comparator.nullsLast(Comparator.naturalOrder())))
+            .ifPresent(appointment -> summary.put("nextAppointment", Map.of(
+                "id", appointment.getId(), "date", appointment.getDate(),
+                "time", appointment.getAppointmentTime() == null ? "" : appointment.getAppointmentTime(),
+                "status", appointment.getStatus(), "doctorPhno", Objects.toString(appointment.getDoctorPhno(), ""))));
+        summary.put("recentAppointmentStatus", myAppointments.stream().findFirst().map(Appointment::getStatus).orElse(null));
         return summary;
     }
 
@@ -65,6 +73,9 @@ public class DashboardController {
                     "Admins only — patients use /api/dashboard/patient-summary, super admin uses /api/superadmin/stats");
         }
         Long hospitalId = me.getHospitalId();
+        if (hospitalId == null) {
+            throw new AccessDeniedException("Admin account is not assigned to a hospital");
+        }
         Map<String, Object> summary = new LinkedHashMap<>();
 
         LocalDate today = LocalDate.now();
@@ -75,19 +86,31 @@ public class DashboardController {
         long totalPatients = patientRepo.findByHospitalId(hospitalId).size();
 
         long todaysAppointments = appointments.stream().filter(a -> today.equals(a.getDate())).count();
-        long monthlyAppointments = appointments.stream().filter(a -> thisMonth.equals(YearMonth.from(a.getDate()))).count();
+        long monthlyAppointments = appointments.stream()
+            .filter(a -> a.getDate() != null && thisMonth.equals(YearMonth.from(a.getDate())))
+            .count();
 
         Map<String, Long> appointmentsPerPatient = appointments.stream()
-                .collect(Collectors.groupingBy(Appointment::getPatientPhno, Collectors.counting()));
+            .filter(a -> a.getPatientPhno() != null)
+            .collect(Collectors.groupingBy(Appointment::getPatientPhno, Collectors.counting()));
         long recurringPatients = appointmentsPerPatient.values().stream().filter(c -> c > 1).count();
         double recurringPercentage = totalPatients == 0 ? 0 : (recurringPatients * 100.0 / totalPatients);
 
         long prescriptionsThisMonth = prescriptions.stream()
-                .filter(p -> thisMonth.equals(YearMonth.from(p.getDate()))).count();
+                .filter(p -> p.getDate() != null && thisMonth.equals(YearMonth.from(p.getDate()))).count();
+        long paidRevenuePaise = paymentOrderRepo.findByHospitalId(hospitalId).stream()
+            .filter(p -> "SUCCESS".equals(p.getStatus()) || "PAID".equals(p.getStatus()))
+            .filter(p -> p.getAmountPaise() != null)
+            .mapToLong(PaymentOrder::getAmountPaise).sum();
+        Map<String, Long> doctorEarnings = paymentOrderRepo.findByHospitalId(hospitalId).stream()
+            .filter(p -> "SUCCESS".equals(p.getStatus()) || "PAID".equals(p.getStatus()))
+            .filter(p -> p.getDoctorPhno() != null && p.getAmountPaise() != null)
+            .collect(Collectors.groupingBy(PaymentOrder::getDoctorPhno, TreeMap::new,
+                Collectors.summingLong(PaymentOrder::getAmountPaise)));
 
         LocalDate weekStart = today.minusDays(6);
         Map<String, Long> appointmentsByDay = appointments.stream()
-                .filter(a -> !a.getDate().isBefore(weekStart))
+                .filter(a -> a.getDate() != null && !a.getDate().isBefore(weekStart))
                 .collect(Collectors.groupingBy(a -> a.getDate().toString(), TreeMap::new, Collectors.counting()));
         for (int i = 0; i < 7; i++) {
             appointmentsByDay.putIfAbsent(weekStart.plusDays(i).toString(), 0L);
@@ -98,6 +121,8 @@ public class DashboardController {
         summary.put("monthlyAppointments", monthlyAppointments);
         summary.put("recurringPatientsPercentage", String.format("%.1f", recurringPercentage));
         summary.put("prescriptionsThisMonth", prescriptionsThisMonth);
+        summary.put("paidRevenuePaise", paidRevenuePaise);
+        summary.put("doctorEarnings", doctorEarnings);
         summary.put("graphData", appointmentsByDay);
 
         return summary;

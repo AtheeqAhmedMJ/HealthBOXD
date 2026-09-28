@@ -1,10 +1,10 @@
-HealthBox - Multi-Tenant Healthcare ERP
+HealthBoxD - Multi-Tenant Healthcare ERP
 ========================================
 
 Project Structure:
 ==================
 
-healthbox/
+healthboxd/
 │
 ├── README.md                          # Architecture, features, stack overview
 ├── QUICKSTART.md                      # 5-minute setup guide
@@ -364,7 +364,7 @@ Getting Started
 
 1. Local Dev (5 min):
    git clone <repo>
-   cd healthbox
+  cd healthboxd
    docker-compose up -d db
    cd backend && ./mvnw spring-boot:run
    cd frontend && npm install && npm run dev

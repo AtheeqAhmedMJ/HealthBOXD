@@ -2,10 +2,18 @@
 import apiClient from '../services/api';
 import { setAuthToken } from '../services/api';
 
+let notificationHandler;
+let interceptorsConfigured = false;
+let customHeadersConfigured = false;
+
 /**
  * Setup API interceptors for request/response handling
  */
 export const setupApiInterceptors = (showNotification) => {
+  notificationHandler = showNotification;
+  if (interceptorsConfigured) return;
+  interceptorsConfigured = true;
+
   // Request Interceptor
   apiClient.interceptors.request.use(
     (config) => {
@@ -58,27 +66,27 @@ export const setupApiInterceptors = (showNotification) => {
           setAuthToken(null);
           localStorage.removeItem('user');
           window.location.href = '/login';
-          showNotification?.('Your session has expired. Please login again.', 'error');
+          notificationHandler?.('Your session has expired. Please login again.', 'error');
           break;
 
         case 403:
           // Forbidden
-          showNotification?.('You do not have permission to perform this action.', 'error');
+          notificationHandler?.('You do not have permission to perform this action.', 'error');
           break;
 
         case 404:
           // Not found
-          showNotification?.('The requested resource was not found.', 'error');
+          notificationHandler?.('The requested resource was not found.', 'error');
           break;
 
         case 409:
           // Conflict
-          showNotification?.(message || 'A conflict occurred. Please try again.', 'warning');
+          notificationHandler?.(message || 'A conflict occurred. Please try again.', 'warning');
           break;
 
         case 429:
           // Too many requests
-          showNotification?.('Too many requests. Please wait a moment and try again.', 'warning');
+          notificationHandler?.('Too many requests. Please wait a moment and try again.', 'warning');
           break;
 
         case 500:
@@ -86,15 +94,15 @@ export const setupApiInterceptors = (showNotification) => {
         case 503:
         case 504:
           // Server errors
-          showNotification?.('Server error. Please try again later.', 'error');
+          notificationHandler?.('Server error. Please try again later.', 'error');
           break;
 
         default:
           if (!error.response) {
             // Network error
-            showNotification?.('Network error. Please check your connection.', 'error');
+            notificationHandler?.('Network error. Please check your connection.', 'error');
           } else {
-            showNotification?.(message || 'An error occurred. Please try again.', 'error');
+            notificationHandler?.(message || 'An error occurred. Please try again.', 'error');
           }
       }
 
@@ -117,6 +125,9 @@ export const setupApiInterceptors = (showNotification) => {
  * Add custom headers to API requests
  */
 export const setupCustomHeaders = () => {
+  if (customHeadersConfigured) return;
+  customHeadersConfigured = true;
+
   apiClient.interceptors.request.use((config) => {
     // Add custom headers
     config.headers['X-App-Version'] = '2.0.0';

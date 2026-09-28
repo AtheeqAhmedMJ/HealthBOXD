@@ -54,7 +54,7 @@ const Logo = ({
       onKeyDown={handleKeyDown}
       role={interactive ? 'button' : undefined}
       tabIndex={interactive ? 0 : undefined}
-      aria-label={interactive ? 'Enter Health Box' : undefined}
+      aria-label={interactive ? 'Enter HealthBoxD' : undefined}
     >
       <div className="logo-halves">
         <img

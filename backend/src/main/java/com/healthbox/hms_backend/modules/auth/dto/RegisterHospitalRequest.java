@@ -8,6 +8,7 @@ import lombok.Setter;
 public class RegisterHospitalRequest {
     private String hospitalName;
     private String hospitalCode;
+    private String location;
     private String adminPhno;
     private String username;
     private String password;

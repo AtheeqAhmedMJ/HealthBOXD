@@ -3,7 +3,7 @@ version: '3.8'
 services:
   db:
     image: postgres:16-alpine
-    container_name: healthbox-db
+    container_name: healthboxd-db
     environment:
       POSTGRES_DB: hms
       POSTGRES_USER: postgres
@@ -18,19 +18,19 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - healthbox-network
+      - healthboxd-network
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: healthbox-backend
     environment:
+      SPRING_PROFILES_ACTIVE: prod
       DATABASE_URL: jdbc:postgresql://db:5432/hms
       DATABASE_USERNAME: postgres
       DATABASE_PASSWORD: postgres
-      JWT_SECRET: 9hklsjSTS+3sH5UY5y6zsc81TEuJTsWxZfaQOC5dz2o=
-      JWT_EXPIRATION: 86400000
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET before starting the stack}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
       FRONTEND_URL: http://localhost:5173,http://localhost:3000
       PORT: 8080
       SMTP_HOST: smtp.gmail.com
@@ -41,22 +41,33 @@ services:
       RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET:-}
       RAZORPAY_WEBHOOK_SECRET: ${RAZORPAY_WEBHOOK_SECRET:-}
       PLATFORM_FEE_PAISE: 75
-      SUPERADMIN_USERNAME: superadmin
-      SUPERADMIN_PASSWORD: SecurePassword123!
-      SUPERADMIN_EMAIL: admin@healthbox.io
-      SUPERADMIN_PHNO: +919999999999
+      SUPERADMIN_USERNAME: ${SUPERADMIN_USERNAME:-}
+      SUPERADMIN_PASSWORD: ${SUPERADMIN_PASSWORD:-}
+      SUPERADMIN_EMAIL: ${SUPERADMIN_EMAIL:-}
+      SUPERADMIN_PHNO: ${SUPERADMIN_PHNO:-}
     ports:
       - "8080:8080"
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        order: start-first
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 768M
     depends_on:
       db:
         condition: service_healthy
     networks:
-      - healthbox-network
+      - healthboxd-network
     restart: unless-stopped
 
 volumes:
   hms_pgdata:
 
 networks:
-  healthbox-network:
+  healthboxd-network:
     driver: bridge

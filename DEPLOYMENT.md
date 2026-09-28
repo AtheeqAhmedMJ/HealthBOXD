@@ -1,6 +1,6 @@
-# HealthBox Deployment Guide
+# HealthBoxD Deployment Guide
 
-Complete guide to deploying HealthBox to production.
+Complete guide to deploying HealthBoxD to production.
 
 ## Table of Contents
 1. [Local Development](#local-development)
@@ -23,7 +23,7 @@ Complete guide to deploying HealthBox to production.
 ```bash
 # 1. Clone repo
 git clone <repo-url>
-cd healthbox
+cd healthboxd
 
 # 2. Set up environment
 cp .env.example .env
@@ -57,25 +57,25 @@ npm run dev
 docker-compose up --build
 
 # Backend only
-docker build -t healthbox-backend ./backend
+docker build -t healthboxd-backend ./backend
 docker run -p 8080:8080 \
   -e DATABASE_URL="jdbc:postgresql://host.docker.internal:5432/hms" \
   -e DATABASE_USERNAME=postgres \
   -e DATABASE_PASSWORD=postgres \
-  healthbox-backend
+   healthboxd-backend
 ```
 
 ### Docker Image for Registry
 ```bash
 # Build backend image
-docker build -t your-registry/healthbox-backend:1.0.0 ./backend
-docker push your-registry/healthbox-backend:1.0.0
+docker build -t your-registry/healthboxd-backend:1.0.0 ./backend
+docker push your-registry/healthboxd-backend:1.0.0
 
 # Build frontend image
 cd frontend
 npm run build
-docker build -t your-registry/healthbox-frontend:1.0.0 .
-docker push your-registry/healthbox-frontend:1.0.0
+docker build -t your-registry/healthboxd-frontend:1.0.0 .
+docker push your-registry/healthboxd-frontend:1.0.0
 ```
 
 ---
@@ -90,7 +90,7 @@ docker push your-registry/healthbox-frontend:1.0.0
    - Connect your GitHub repo
 
 2. **Configure Service**
-   - **Name:** healthbox-backend
+   - **Name:** healthboxd-backend
    - **Environment:** Docker
    - **Region:** Choose nearest
    - **Plan:** Free or Paid (Starter)
@@ -135,8 +135,8 @@ vercel --prod
 ```
 
 Set environment variables in Vercel dashboard:
-- `VITE_API_URL=https://healthbox-backend.onrender.com/api`
-- `VITE_AUTH_URL=https://healthbox-backend.onrender.com/auth`
+- `VITE_API_URL=https://healthboxd-backend.onrender.com/api`
+- `VITE_AUTH_URL=https://healthboxd-backend.onrender.com/auth`
 
 ---
 
@@ -260,7 +260,7 @@ ENTRYPOINT ["java","-jar","app.jar"]
 |----------|---------|---------|
 | `SUPERADMIN_USERNAME` | Initial admin username | `superadmin` |
 | `SUPERADMIN_PASSWORD` | Initial admin password | `SuperPassword123!` |
-| `SUPERADMIN_EMAIL` | Initial admin email | `admin@healthbox.io` |
+| `SUPERADMIN_EMAIL` | Initial admin email | `admin@healthboxd.io` |
 
 ---
 
