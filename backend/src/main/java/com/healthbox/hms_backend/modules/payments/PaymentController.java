@@ -56,6 +56,7 @@ public class PaymentController {
     private PaymentResponse response(PaymentOrder payment) {
         return new PaymentResponse(payment.getId(), payment.getRazorpayOrderId(), payment.getRazorpayPaymentId(),
                 payment.getAppointmentId(), payment.getConsultationId(), payment.getPrescriptionId(),
-                payment.getAmountPaise(), payment.getStatus(), payment.getCreatedAt(), payment.getPaidAt());
+            payment.getAmountPaise(), payment.getStatus(), payment.getTransferStatus(), payment.getTransferId(),
+            payment.getCreatedAt(), payment.getPaidAt());
     }
 }

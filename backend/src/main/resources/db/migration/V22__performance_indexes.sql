@@ -1,0 +1,11 @@
+CREATE INDEX IF NOT EXISTS idx_users_hospital_role ON users(hospital_id, role);
+CREATE INDEX IF NOT EXISTS idx_appointments_hospital_date_status ON appointments(hospital_id, date, status);
+CREATE INDEX IF NOT EXISTS idx_appointments_hospital_doctor_date ON appointments(hospital_id, doctor_phno, date);
+CREATE INDEX IF NOT EXISTS idx_patients_hospital_phone ON patients(hospital_id, phno);
+CREATE INDEX IF NOT EXISTS idx_prescriptions_hospital_date ON prescriptions(hospital_id, date DESC);
+CREATE INDEX IF NOT EXISTS idx_prescriptions_hospital_patient ON prescriptions(hospital_id, patient_phno);
+CREATE INDEX IF NOT EXISTS idx_payment_orders_hospital_status_paid ON payment_orders(hospital_id, status, paid_at DESC);
+CREATE INDEX IF NOT EXISTS idx_payment_orders_hospital_doctor_status ON payment_orders(hospital_id, doctor_phno, status);
+CREATE INDEX IF NOT EXISTS idx_consultations_doctor_status_created ON consultations(doctor_phno, status, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_consultations_patient_status_created ON consultations(patient_phno, status, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_approval_requests_status_created ON approval_requests(status, created_at DESC);

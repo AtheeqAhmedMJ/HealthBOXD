@@ -30,4 +30,7 @@ public class User {
 
     @Column(name = "hospital_id") // null only for SUPER_ADMIN
     private Long hospitalId;
+
+    @Column(name = "razorpay_account_id", length = 40)
+    private String razorpayAccountId;
 }

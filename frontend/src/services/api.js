@@ -193,6 +193,11 @@ export const superadminAPI = {
   getCompanies: () => apiClient.get('/superadmin/companies'),
   getApprovals: (status = 'PENDING') => apiClient.get('/superadmin/approvals', { params: { status } }),
   reviewApproval: (id, status, reason = '') => apiClient.patch(`/superadmin/approvals/${id}`, { status, reason }),
+  assignDoctor: (doctorPhno, hospitalId, razorpayAccountId) => apiClient.post(`/superadmin/doctors/${encodeURIComponent(doctorPhno)}/clinics/${hospitalId}`, { razorpayAccountId }),
+  getServiceFees: (hospitalId) => apiClient.get('/superadmin/service-fees', { params: hospitalId ? { hospitalId } : {} }),
+  createServiceFee: (bracket) => apiClient.post('/superadmin/service-fees', bracket),
+  updateServiceFee: (id, bracket) => apiClient.patch(`/superadmin/service-fees/${id}`, bracket),
+  deactivateServiceFee: (id) => apiClient.delete(`/superadmin/service-fees/${id}`),
 };
 
 export default apiClient;

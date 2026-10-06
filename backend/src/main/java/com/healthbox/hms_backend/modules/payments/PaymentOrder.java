@@ -54,6 +54,15 @@ public class PaymentOrder {
     @Column(name = "doctor_amount_paise", nullable = false)
     private Long doctorAmountPaise;
 
+    @Column(name = "transfer_id")
+    private String transferId;
+
+    @Column(name = "transfer_status", nullable = false)
+    private String transferStatus = "PENDING";
+
+    @Column(name = "transfer_error")
+    private String transferError;
+
     @Column(nullable = false)
     private String status = "CREATED"; // CREATED, PAID, FAILED
 

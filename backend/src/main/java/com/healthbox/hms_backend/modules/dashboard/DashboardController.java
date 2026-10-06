@@ -6,7 +6,6 @@ import com.healthbox.hms_backend.modules.auth.Role;
 import com.healthbox.hms_backend.modules.patients.PatientRepository;
 import com.healthbox.hms_backend.modules.payments.PaymentOrder;
 import com.healthbox.hms_backend.modules.payments.PaymentOrderRepository;
-import com.healthbox.hms_backend.modules.prescriptions.Prescription;
 import com.healthbox.hms_backend.modules.prescriptions.PrescriptionRepository;
 import com.healthbox.hms_backend.security.principal.AppUserPrincipal;
 import com.healthbox.hms_backend.security.principal.CurrentUser;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/dashboard")
@@ -81,37 +79,23 @@ public class DashboardController {
         LocalDate today = LocalDate.now();
         YearMonth thisMonth = YearMonth.now();
 
-        List<Appointment> appointments = appointmentRepo.findByHospitalId(hospitalId);
-        List<Prescription> prescriptions = prescriptionRepo.findByHospitalId(hospitalId);
-        long totalPatients = patientRepo.findByHospitalId(hospitalId).size();
-
-        long todaysAppointments = appointments.stream().filter(a -> today.equals(a.getDate())).count();
-        long monthlyAppointments = appointments.stream()
-            .filter(a -> a.getDate() != null && thisMonth.equals(YearMonth.from(a.getDate())))
-            .count();
-
-        Map<String, Long> appointmentsPerPatient = appointments.stream()
-            .filter(a -> a.getPatientPhno() != null)
-            .collect(Collectors.groupingBy(Appointment::getPatientPhno, Collectors.counting()));
-        long recurringPatients = appointmentsPerPatient.values().stream().filter(c -> c > 1).count();
+        long totalPatients = patientRepo.countByHospitalId(hospitalId);
+        LocalDate monthStart = thisMonth.atDay(1);
+        LocalDate monthEnd = thisMonth.atEndOfMonth();
+        long todaysAppointments = appointmentRepo.countByHospitalIdAndDate(hospitalId, today);
+        long monthlyAppointments = appointmentRepo.countByHospitalIdAndDateBetween(hospitalId, monthStart, monthEnd);
+        long recurringPatients = appointmentRepo.findRecurringPatients(hospitalId).size();
         double recurringPercentage = totalPatients == 0 ? 0 : (recurringPatients * 100.0 / totalPatients);
 
-        long prescriptionsThisMonth = prescriptions.stream()
-                .filter(p -> p.getDate() != null && thisMonth.equals(YearMonth.from(p.getDate()))).count();
-        long paidRevenuePaise = paymentOrderRepo.findByHospitalId(hospitalId).stream()
-            .filter(p -> "SUCCESS".equals(p.getStatus()) || "PAID".equals(p.getStatus()))
-            .filter(p -> p.getAmountPaise() != null)
-            .mapToLong(PaymentOrder::getAmountPaise).sum();
-        Map<String, Long> doctorEarnings = paymentOrderRepo.findByHospitalId(hospitalId).stream()
-            .filter(p -> "SUCCESS".equals(p.getStatus()) || "PAID".equals(p.getStatus()))
-            .filter(p -> p.getDoctorPhno() != null && p.getAmountPaise() != null)
-            .collect(Collectors.groupingBy(PaymentOrder::getDoctorPhno, TreeMap::new,
-                Collectors.summingLong(PaymentOrder::getAmountPaise)));
+        long prescriptionsThisMonth = prescriptionRepo.countByHospitalIdAndDateBetween(hospitalId, monthStart, monthEnd);
+        List<String> paidStatuses = List.of("SUCCESS", "PAID");
+        long paidRevenuePaise = paymentOrderRepo.sumAmountByHospitalAndStatuses(hospitalId, paidStatuses);
+        Map<String, Long> doctorEarnings = new TreeMap<>();
+        paymentOrderRepo.sumByDoctorAndHospital(hospitalId, paidStatuses).forEach(row -> doctorEarnings.put((String) row[0], ((Number) row[1]).longValue()));
 
         LocalDate weekStart = today.minusDays(6);
-        Map<String, Long> appointmentsByDay = appointments.stream()
-                .filter(a -> a.getDate() != null && !a.getDate().isBefore(weekStart))
-                .collect(Collectors.groupingBy(a -> a.getDate().toString(), TreeMap::new, Collectors.counting()));
+        Map<String, Long> appointmentsByDay = new TreeMap<>();
+        appointmentRepo.countByDateBetween(hospitalId, weekStart, today).forEach(row -> appointmentsByDay.put(row[0].toString(), ((Number) row[1]).longValue()));
         for (int i = 0; i < 7; i++) {
             appointmentsByDay.putIfAbsent(weekStart.plusDays(i).toString(), 0L);
         }

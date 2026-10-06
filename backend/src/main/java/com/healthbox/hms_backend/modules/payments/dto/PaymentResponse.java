@@ -11,6 +11,8 @@ public record PaymentResponse(
         Long prescriptionId,
         long amountPaise,
         String status,
+        String transferStatus,
+        String transferId,
         LocalDateTime createdAt,
         LocalDateTime paidAt
 ) {}

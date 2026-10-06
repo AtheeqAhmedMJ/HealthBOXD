@@ -13,6 +13,7 @@ import com.healthbox.hms_backend.modules.charges.ChargeItemRepository;
 import com.healthbox.hms_backend.modules.payments.dto.CheckoutRequest;
 import com.healthbox.hms_backend.modules.payments.dto.CheckoutResponse;
 import com.healthbox.hms_backend.modules.payments.dto.VerifyRequest;
+import com.healthbox.hms_backend.modules.fees.ServiceFeeBracketService;
 import com.healthbox.hms_backend.security.principal.AppUserPrincipal;
 import com.healthbox.hms_backend.security.principal.CurrentUser;
 import org.json.JSONObject;
@@ -38,6 +39,7 @@ public class PaymentService {
     private final CurrentUser currentUser;
     private final ObjectMapper objectMapper;
     private final ConsultationMaterializer materializer;
+    private final ServiceFeeBracketService serviceFeeBracketService;
 
     @Value("${razorpay.key-id}")
     private String keyId;
@@ -53,7 +55,8 @@ public class PaymentService {
 
     public PaymentService(PaymentOrderRepository orderRepo, ChargeItemRepository chargeItemRepo,
                            AppointmentRepository appointmentRepo, RazorpayClient razorpayClient,
-                           CurrentUser currentUser, ObjectMapper objectMapper, ConsultationMaterializer materializer) {
+                           CurrentUser currentUser, ObjectMapper objectMapper, ConsultationMaterializer materializer,
+                           ServiceFeeBracketService serviceFeeBracketService) {
         this.orderRepo = orderRepo;
         this.chargeItemRepo = chargeItemRepo;
         this.appointmentRepo = appointmentRepo;
@@ -61,6 +64,7 @@ public class PaymentService {
         this.currentUser = currentUser;
         this.objectMapper = objectMapper;
         this.materializer = materializer;
+        this.serviceFeeBracketService = serviceFeeBracketService;
     }
 
     public CheckoutResponse createCheckout(CheckoutRequest req) {
@@ -103,8 +107,9 @@ public class PaymentService {
             throw new IllegalArgumentException("Provide chargeItemIds or a customAmountPaise");
         }
 
-        if (amountPaise <= platformFeePaise) {
-            throw new IllegalArgumentException("Charges must exceed the platform fee (₹" + (platformFeePaise / 100.0) + ")");
+        long calculatedFeePaise = serviceFeeBracketService.calculate(amountPaise, platformFeePaise, me.getHospitalId());
+        if (calculatedFeePaise >= amountPaise) {
+            throw new IllegalArgumentException("Service fee must be lower than the payment amount");
         }
 
         try {
@@ -124,8 +129,8 @@ public class PaymentService {
             po.setPrescriptionId(req.getPrescriptionId());
             po.setRazorpayOrderId(order.get("id"));
             po.setAmountPaise(amountPaise);
-            po.setPlatformFeePaise(platformFeePaise);
-            po.setDoctorAmountPaise(amountPaise - platformFeePaise);
+            po.setPlatformFeePaise(calculatedFeePaise);
+            po.setDoctorAmountPaise(amountPaise - calculatedFeePaise);
             po.setStatus("CREATED");
             po.setIdempotencyKey(req.getIdempotencyKey());
             po.setUpdatedAt(java.time.LocalDateTime.now());

@@ -1,0 +1,2 @@
+ALTER TABLE service_fee_brackets ADD COLUMN IF NOT EXISTS hospital_id BIGINT REFERENCES hospitals(id);
+CREATE INDEX IF NOT EXISTS idx_service_fee_brackets_hospital_active_min ON service_fee_brackets(hospital_id, active, min_amount_paise);

@@ -7,4 +7,5 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     java.util.Optional<Patient> findByPhno(String phno);
     List<Patient> findByHospitalId(Long hospitalId);
     List<Patient> findByHospitalIdAndAssignedDoctorPhno(Long hospitalId, String doctorPhno);
+    long countByHospitalId(Long hospitalId);
 }

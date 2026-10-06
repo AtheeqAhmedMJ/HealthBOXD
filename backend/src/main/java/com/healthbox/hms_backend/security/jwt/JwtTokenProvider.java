@@ -30,15 +30,14 @@ public class JwtTokenProvider {
     }
 
     public String generateToken(User user, Long hospitalId) {
-        return Jwts.builder()
+        var builder = Jwts.builder()
                 .subject(user.getUsername())
                 .claim("phno", user.getPhno())
                 .claim("role", user.getRole().name())
-                .claim("hospitalId", hospitalId)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(key)
-                .compact();
+            .expiration(new Date(System.currentTimeMillis() + expiration));
+        if (hospitalId != null) builder.claim("hospitalId", hospitalId);
+        return builder.signWith(key).compact();
     }
 
     public Claims getClaims(String token) {

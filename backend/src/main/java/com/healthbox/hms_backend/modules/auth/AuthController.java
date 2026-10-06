@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
 import java.util.List;
+import java.util.LinkedHashMap;
 import java.security.SecureRandom;
 import com.healthbox.hms_backend.modules.patients.Patient;
 import com.healthbox.hms_backend.modules.patients.PatientRepository;
@@ -106,9 +107,14 @@ public class AuthController {
         if (actor.getRole() != Role.ADMIN) throw new AccessDeniedException("Doctors only");
         return membershipRepository.findByDoctorPhnoAndActiveTrue(actor.getPhno()).stream().map(membership -> {
             Hospital hospital = hospitalRepository.findById(membership.getHospitalId()).orElseThrow();
-            return Map.of("id", hospital.getId(), "name", hospital.getName(), "code", hospital.getCode(),
-                    "location", hospital.getLocation() == null ? "" : hospital.getLocation(),
-                    "approvalStatus", hospital.getApprovalStatus(), "active", hospital.getId().equals(actor.getHospitalId()));
+            Map<String, Object> row = new LinkedHashMap<>();
+            row.put("id", hospital.getId());
+            row.put("name", hospital.getName());
+            row.put("code", hospital.getCode());
+            row.put("location", hospital.getLocation() == null ? "" : hospital.getLocation());
+            row.put("approvalStatus", hospital.getApprovalStatus());
+            row.put("active", hospital.getId().equals(actor.getHospitalId()));
+            return row;
         }).toList();
     }
 

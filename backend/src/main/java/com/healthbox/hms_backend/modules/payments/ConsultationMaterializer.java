@@ -13,7 +13,6 @@ import com.healthbox.hms_backend.modules.consultations.ConsultationRepository;
 import com.healthbox.hms_backend.modules.notifications.NotificationService;
 import com.healthbox.hms_backend.shared.events.DomainEventPublisher;
 import com.healthbox.hms_backend.shared.events.PaymentCompleted;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +38,7 @@ public class ConsultationMaterializer {
     private final ConsultationRepository consultationRepo;
     private final NotificationService notificationService;
     private final DomainEventPublisher events;
+    private final DoctorPayoutService doctorPayoutService;
 
     public ConsultationMaterializer(PaymentOrderRepository orderRepo, PatientRepository patientRepo,
                                      PrescriptionRepository prescriptionRepo, BillingRepository billingRepo,
@@ -46,15 +46,25 @@ public class ConsultationMaterializer {
                                      ConsultationRepository consultationRepo,
                                      NotificationService notificationService) {
         this(orderRepo, patientRepo, prescriptionRepo, billingRepo, medicationRepo, consultationRepo,
-                notificationService, DomainEventPublisher.noop());
+                            notificationService, DomainEventPublisher.noop(), null);
     }
 
-    @Autowired
     public ConsultationMaterializer(PaymentOrderRepository orderRepo, PatientRepository patientRepo,
                                      PrescriptionRepository prescriptionRepo, BillingRepository billingRepo,
                                      PrescriptionMedicationRepository medicationRepo,
                                      ConsultationRepository consultationRepo,
                                      NotificationService notificationService, DomainEventPublisher events) {
+                        this(orderRepo, patientRepo, prescriptionRepo, billingRepo, medicationRepo, consultationRepo,
+                            notificationService, events, null);
+                        }
+
+                        @org.springframework.beans.factory.annotation.Autowired
+                        public ConsultationMaterializer(PaymentOrderRepository orderRepo, PatientRepository patientRepo,
+                                         PrescriptionRepository prescriptionRepo, BillingRepository billingRepo,
+                                         PrescriptionMedicationRepository medicationRepo,
+                                         ConsultationRepository consultationRepo,
+                                         NotificationService notificationService, DomainEventPublisher events,
+                                         DoctorPayoutService doctorPayoutService) {
         this.orderRepo = orderRepo;
         this.patientRepo = patientRepo;
         this.prescriptionRepo = prescriptionRepo;
@@ -63,6 +73,7 @@ public class ConsultationMaterializer {
         this.consultationRepo = consultationRepo;
         this.notificationService = notificationService;
         this.events = events;
+        this.doctorPayoutService = doctorPayoutService;
     }
 
     @Transactional
@@ -164,6 +175,7 @@ public class ConsultationMaterializer {
         po.setPaidAt(LocalDateTime.now());
         po.setRazorpayPaymentId(razorpayPaymentId);
         po.setUpdatedAt(LocalDateTime.now());
+        if (doctorPayoutService != null) doctorPayoutService.transfer(po);
         orderRepo.save(po);
         if (consultation != null) {
             consultation.setStatus("FINALIZED");
