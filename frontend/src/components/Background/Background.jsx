@@ -10,7 +10,7 @@ const Background = () => {
           inset: 0;
           z-index: -10;
           overflow: hidden;
-          background: linear-gradient(135deg, #d794d0, #d9b3e2);
+          background: linear-gradient(135deg, #eef2f6, #c9d0d8);
           contain: strict;
         }
 
@@ -21,8 +21,8 @@ const Background = () => {
           width: 60%;
           height: 100%;
           background: linear-gradient(to left,
-            rgba(255, 255, 255, 0.8),
-            rgba(255, 255, 255, 0.1) 60%,
+            rgba(201, 208, 216, 0.9),
+            rgba(180, 143, 224, 0.16) 60%,
             transparent
           );
           clip-path: ellipse(80% 100% at 100% 50%);
@@ -58,7 +58,7 @@ const Background = () => {
           width: 100%;
           height: 100%;
           background: linear-gradient(to left,
-            rgba(255, 255, 255, 0.4),
+            rgba(180, 143, 224, 0.32),
             transparent 70%
           );
           animation: hbxWaveBefore 12s ease-in-out infinite alternate-reverse;
@@ -75,8 +75,8 @@ const Background = () => {
           width: 100%;
           height: 100%;
           background: linear-gradient(to left,
-            rgba(255, 255, 255, 0.6),
-            rgba(255, 255, 255, 0.3) 50%,
+            rgba(180, 143, 224, 0.55),
+            rgba(180, 143, 224, 0.24) 50%,
             transparent 80%
           );
           animation: hbxWaveAfter 10s ease-in-out infinite alternate -2s;

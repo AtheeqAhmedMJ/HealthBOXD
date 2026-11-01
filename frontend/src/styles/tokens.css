@@ -1,0 +1,13 @@
+:root {
+  --color-ice: #eef2f6;
+  --color-silver: #c9d0d8;
+  --color-aubergine: #2a0f2eab;
+  --color-aubergine-2: #4a2150;
+  --color-mute: #6b5a72;
+  --glass-light: rgba(255, 255, 255, 0.38);
+  --glass-light-strong: rgba(255, 255, 255, 0.54);
+  --glass-dark: rgba(42, 15, 46, 0.62);
+  --glass-border: rgba(255, 255, 255, 0.28);
+  --glass-shadow: 0 8px 24px rgba(42, 15, 46, 0.1);
+  --motion-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}

@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import './styles/tokens.css';
+@import './styles/components.css';
 
 @tailwind base;
 @tailwind components;
@@ -26,25 +28,8 @@ body {
   min-width: 320px;
   font-family: 'Outfit', sans-serif;
   font-weight: 400;
-  color: #2f2a38;
-  background:
-    radial-gradient(
-      circle at top left,
-      rgba(218, 190, 225, 0.75),
-      transparent 38%
-    ),
-    radial-gradient(
-      circle at bottom right,
-      rgba(210, 185, 220, 0.65),
-      transparent 40%
-    ),
-    linear-gradient(
-      135deg,
-      #e7d6e9 0%,
-      #eadced 45%,
-      #ddd0e3 100%
-    );
-  background-attachment: fixed;
+  color: var(--color-aubergine);
+  background: var(--color-ice);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -72,8 +57,8 @@ select {
 }
 
 ::selection {
-  background: rgba(31, 31, 46, 0.28);
-  color: #1f1f2e;
+  background: rgba(42, 15, 46, 0.28);
+  color: var(--color-aubergine);
 }
 
 ::-webkit-scrollbar {
@@ -82,28 +67,28 @@ select {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(31, 31, 46, 0.08);
+  background: rgba(42, 15, 46, 0.08);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(31, 31, 46, 0.52);
+  background: rgba(42, 15, 46, 0.52);
   border-radius: 999px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(31, 31, 46, 0.7);
+  background: rgba(42, 15, 46, 0.7);
   background-clip: padding-box;
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(31, 31, 46, 0.52) rgba(31, 31, 46, 0.08);
+  scrollbar-color: rgba(42, 15, 46, 0.52) rgba(42, 15, 46, 0.08);
 }
 
 :focus-visible {
-  outline: 2px solid rgba(31, 31, 46, 0.55);
+  outline: 2px solid rgba(74, 33, 80, 0.7);
   outline-offset: 3px;
 }
 
@@ -122,4 +107,34 @@ button {
 img {
   max-width: 100%;
   display: block;
+}
+
+a,
+button,
+input,
+textarea,
+select {
+  transition:
+    color 0.25s var(--motion-smooth),
+    background-color 0.3s var(--motion-smooth),
+    border-color 0.3s var(--motion-smooth),
+    box-shadow 0.3s var(--motion-smooth),
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--color-aubergine-2) !important;
+  box-shadow: 0 0 0 4px rgba(74, 33, 80, 0.16), 0 10px 24px rgba(42, 15, 46, 0.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

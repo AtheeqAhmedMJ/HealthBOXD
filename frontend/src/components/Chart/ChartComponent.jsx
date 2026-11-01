@@ -46,7 +46,7 @@ const ChartComponent = ({ data = [], type = 'line' }) => {
           <Legend />
           <Bar
             dataKey="appointments"
-            fill="#a887b2"
+            fill="#4a2150"
             radius={[8, 8, 0, 0]}
             name="Appointments"
           />
@@ -71,15 +71,15 @@ const ChartComponent = ({ data = [], type = 'line' }) => {
             border: '1px solid rgba(200, 200, 200, 0.3)',
             borderRadius: '8px',
           }}
-          cursor={{ stroke: 'rgba(168, 135, 178, 0.2)' }}
+          cursor={{ stroke: 'rgba(74, 33, 80, 0.2)' }}
         />
         <Legend />
         <Line
           type="monotone"
           dataKey="appointments"
-          stroke="#a887b2"
+          stroke="#4a2150"
           strokeWidth={3}
-          dot={{ fill: '#a887b2', r: 4 }}
+          dot={{ fill: '#4a2150', r: 4 }}
           activeDot={{ r: 6 }}
           name="Appointments"
           isAnimationActive

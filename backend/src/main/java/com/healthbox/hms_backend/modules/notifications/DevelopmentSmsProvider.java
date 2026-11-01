@@ -1,12 +1,12 @@
 package com.healthbox.hms_backend.modules.notifications;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-@ConditionalOnMissingBean(SmsProvider.class)
+@ConditionalOnProperty(name = "sms.provider-enabled", havingValue = "false", matchIfMissing = true)
 public class DevelopmentSmsProvider implements SmsProvider {
     private final Map<String, String> lastMessages = new ConcurrentHashMap<>();
 

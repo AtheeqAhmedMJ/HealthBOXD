@@ -175,27 +175,27 @@ export const REGEX_PATTERNS = {
  * Color Scheme
  */
 export const COLORS = {
-  PRIMARY: '#a887b2',
-  SECONDARY: '#7a5af5',
-  ACCENT: '#d794d0',
-  LIGHT_PURPLE: '#dec9f9',
-  LIGHT_PINK: '#e9dbf7',
+  PRIMARY: '#2a0f2e',
+  SECONDARY: '#4a2150',
+  ACCENT: '#4a2150',
+  LIGHT_PURPLE: '#2a0f2e',
+  LIGHT_PINK: '#eef2f6',
   SUCCESS: '#10b981',
   WARNING: '#f59e0b',
   ERROR: '#ef4444',
   INFO: '#3b82f6',
-  TEXT: '#1f1f2e',
-  TEXT_LIGHT: '#6b7280',
-  BORDER: '#e5e7eb',
+  TEXT: '#2a0f2e',
+  TEXT_LIGHT: '#6b5a72',
+  BORDER: '#c9d0d8',
 };
 
 /**
  * Chart Colors
  */
 export const CHART_COLORS = [
-  '#a887b2',
-  '#7a5af5',
-  '#d794d0',
+  '#4a2150',
+  '#2a0f2e',
+  '#4a2150',
   '#f97316',
   '#06b6d4',
   '#ec4899',

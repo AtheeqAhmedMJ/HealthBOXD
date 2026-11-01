@@ -100,7 +100,7 @@ const AppointmentsPage = () => {
           </div>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-lg hover:shadow-lg transition-all transform hover:scale-105"
+            className="flex items-center gap-2 px-6 py-3 bg-[#2a0f2e] text-white font-semibold rounded-lg shadow-sm hover:bg-[#4a2150] hover:shadow-md transition-all"
           >
             <FiPlus size={20} />
             New Appointment
@@ -188,7 +188,7 @@ const AppointmentsPage = () => {
               <div className="md:col-span-2 flex gap-3">
                 <button
                   type="submit"
-                  className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-lg hover:shadow-lg transition-all"
+                  className="flex-1 py-3 bg-[#2a0f2e] text-white font-semibold rounded-lg shadow-sm hover:bg-[#4a2150] hover:shadow-md transition-all"
                 >
                   Schedule Appointment
                 </button>

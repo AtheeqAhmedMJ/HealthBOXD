@@ -7,12 +7,14 @@ import com.healthbox.hms_backend.modules.tenant.HospitalRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 // DEV ONLY: provisions a ready-to-use demo hospital + doctor (ADMIN) login on first boot,
 // so you can start testing immediately without going through self-registration/OTP.
 // Safe to leave in for local dev — it's idempotent and skips itself once the demo hospital exists.
 @Component
+@Profile("dev")
 public class DevTestUserSeeder implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DevTestUserSeeder.class);

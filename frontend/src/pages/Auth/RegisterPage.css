@@ -31,7 +31,7 @@
   font-weight: 400;
   letter-spacing: 2px;
 
-  color: #1f1f2edb;
+  color: var(--color-aubergine);
 
   margin: 0 0 20px;
 
@@ -68,13 +68,13 @@
   font-size: 2rem;
   font-weight: 500;
 
-  color: #2d2d2d;
+  color: var(--color-aubergine);
 }
 
 .register-subtitle {
   text-align: center;
 
-  color: #555;
+  color: var(--color-mute);
 
   margin-bottom: 30px;
 }
@@ -109,7 +109,7 @@
 
   cursor: pointer;
 
-  color: #333;
+  color: var(--color-aubergine);
 
   transition: all 0.3s ease;
 
@@ -136,7 +136,7 @@
 
   font-size: 0.9rem;
 
-  color: #666;
+  color: var(--color-mute);
 }
 
 
@@ -161,7 +161,7 @@
 
   font-weight: 500;
 
-  color: #3f3f3f;
+  color: var(--color-aubergine);
 }
 
 .register-input-wrapper {
@@ -178,7 +178,7 @@
 
   transform: translateY(-50%);
 
-  color: #777;
+  color: var(--color-mute);
 
   pointer-events: none;
 }
@@ -235,7 +235,7 @@
 
   border-radius: 14px;
 
-  background: #2d2d2d;
+  background: var(--color-aubergine);
 
   color: white;
 
@@ -249,7 +249,7 @@
 }
 
 .otp-button:hover:not(:disabled) {
-  background: #444;
+  background: var(--color-aubergine-2);
 
   transform: translateY(-2px);
 }
@@ -335,11 +335,11 @@
 
   margin-top: 30px;
 
-  color: #444;
+  color: var(--color-mute);
 }
 
 .login-link a {
-  color: #8e4162e0;
+  color: var(--color-aubergine-2);
 
   font-weight: 600;
 
@@ -357,7 +357,7 @@
 
   background: transparent;
 
-  color: #444;
+  color: var(--color-mute);
 
   font-weight: 600;
 
@@ -367,7 +367,7 @@
 }
 
 .back-button:hover {
-  color: #8e4162e0;
+  color: var(--color-aubergine-2);
 }
 
 

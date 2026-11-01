@@ -60,6 +60,12 @@ SMTP_PASSWORD=your-app-password
 RAZORPAY_KEY_ID=
 RAZORPAY_KEY_SECRET=
 RAZORPAY_WEBHOOK_SECRET=
+SMS_PROVIDER_ENABLED=false
+SMS_PROVIDER_URL=https://free2sms.com/api/v1/send
+SMS_API_KEY=
+SMS_SENDER_ID=
+SMS_TEMPLATE_ID=
+SMS_DEV_INSPECTOR_ENABLED=true
 PLATFORM_FEE_PAISE=75
 SUPERADMIN_USERNAME=superadmin
 SUPERADMIN_PASSWORD=SecurePassword123!
@@ -151,17 +157,17 @@ All tables include `hospital_id` for tenant isolation.
 ### Authentication & Authorization
 - **Method:** JWT (RS256 asymmetric signing)
 - **Claims:** `hospitalId`, `role`, `phno`, `username`
-- **Roles:** ADMIN, DOCTOR, PHARMACIST, PATIENT
-- **Token Lifetime:** 15 min access + 7 day refresh (rotated)
+- **Roles:** SUPER_ADMIN, ADMIN, PATIENT
+- **Token Lifetime:** Configured by `JWT_EXPIRATION` (access token only)
 
 ### Security Baseline
 - HTTPS enforced in production
-- HSTS headers enabled
+- HSTS headers enabled by the backend; HTTPS termination is still required in production
 - Input validation (Bean Validation @Valid)
 - Parameterized queries (JPA/Hibernate)
 - Rate limiting on auth endpoints
 - Audit trail on charges, payments, prescriptions
-- Data encryption at rest (pgcrypto or app-level AES-256)
+- Data encryption at rest is provided by the managed PostgreSQL/deployment platform and must be enabled in production
 
 ## Deployment
 

@@ -47,7 +47,7 @@
 
   letter-spacing: 2px;
 
-  color: #1f1f2edb;
+  color: var(--color-aubergine);
 
   text-shadow:
     0 2px 4px rgba(0, 0, 0, 0.1);
@@ -106,7 +106,7 @@
 
   font-weight: 500;
 
-  color: #3f3f3f;
+  color: var(--color-aubergine);
 }
 
 .input-wrapper {
@@ -123,7 +123,7 @@
   transform:
     translateY(-50%);
 
-  color: #777;
+  color: var(--color-mute);
 
   pointer-events: none;
 }
@@ -191,7 +191,7 @@
 
   gap: 8px;
 
-  color: #3f3f3f;
+  color: var(--color-mute);
 
   cursor: pointer;
 }
@@ -201,7 +201,7 @@
 }
 
 .forgot-password {
-  color: #3f3f3f;
+  color: var(--color-mute);
 
   text-decoration: underline;
 
@@ -210,7 +210,7 @@
 }
 
 .forgot-password:hover {
-  color: #8e4162e0;
+  color: var(--color-aubergine-2);
 }
 
 /* =========================
@@ -226,7 +226,7 @@
 
   border-radius: 14px;
 
-  background: #2d2d2d;
+  background: var(--color-aubergine);
 
   color: white;
 
@@ -250,7 +250,7 @@
   transform:
     translateY(-2px);
 
-  background: #444;
+  background: var(--color-aubergine-2);
 
   box-shadow:
     0 6px 20px
@@ -302,11 +302,11 @@
 
   text-align: center;
 
-  color: #3f3f3f;
+  color: var(--color-mute);
 }
 
 .register-text a {
-  color: #8e4162e0;
+  color: var(--color-aubergine-2);
 
   font-weight: 600;
 

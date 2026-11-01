@@ -139,7 +139,7 @@ return (
     <div className="register-container">
 
       <h1 className="register-title">
-        HEALTH BOX
+        HEALTH BOXD
       </h1>
 
       <div className="register-form">

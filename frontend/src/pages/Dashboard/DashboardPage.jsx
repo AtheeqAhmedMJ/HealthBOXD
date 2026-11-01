@@ -84,7 +84,7 @@ const DashboardPage = () => {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-80px)]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-2 border-white/20 border-t-[#1f1f2e] mx-auto mb-4" />
+          <div className="animate-spin rounded-full h-16 w-16 border-2 border-white/20 border-t-[#2a0f2e] mx-auto mb-4" />
 
           <p className="text-gray-700 font-medium">
             Loading dashboard...
@@ -96,7 +96,7 @@ const DashboardPage = () => {
 
   if (JSON.parse(localStorage.getItem('user') || '{}')?.role === 'PATIENT') {
     const next = patientSummary?.nextAppointment;
-    return <div className="min-h-screen p-4 md:p-8"><div className="max-w-5xl mx-auto"><h1 className="text-4xl font-bold text-gray-900 mb-2">Patient Dashboard</h1><p className="text-gray-600 mb-8">Your appointments, payments, and finalized records.</p>{error && <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg">{error}</div>}<div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8"><StatCard title="Upcoming appointments" value={patientSummary?.upcomingAppointments || 0} icon={FiCalendar} color="bg-[rgba(31,31,46,0.52)]" /><StatCard title="Finalized prescriptions" value={patientSummary?.totalPrescriptions || 0} icon={FiFileText} color="bg-[rgba(31,31,46,0.52)]" /><StatCard title="Pending payments" value={patientSummary?.pendingPayments || 0} icon={FiCreditCard} color="bg-[rgba(31,31,46,0.52)]" /></div><div className="bg-white/70 rounded-2xl p-6 shadow mb-6"><h2 className="text-xl font-bold mb-3">Next appointment</h2>{next ? <p>{next.date} {next.time} · {next.status} · Doctor {next.doctorPhno || 'To be assigned'}</p> : <p className="text-gray-600">No upcoming appointments.</p>}</div><div className="flex gap-3"><Link className="px-4 py-3 rounded-lg bg-gray-900 text-white" to="/appointments">Book appointment</Link><Link className="px-4 py-3 rounded-lg border" to="/medical-records">Medical records</Link><Link className="px-4 py-3 rounded-lg border" to="/payments">Payments</Link></div></div></div>;
+    return <div className="min-h-screen p-4 md:p-8"><div className="max-w-5xl mx-auto"><h1 className="text-4xl font-bold text-gray-900 mb-2">Patient Dashboard</h1><p className="text-gray-600 mb-8">Your appointments, payments, and finalized records.</p>{error && <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg">{error}</div>}<div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8"><StatCard title="Upcoming appointments" value={patientSummary?.upcomingAppointments || 0} icon={FiCalendar} color="bg-[rgba(42,15,46,0.52)]" /><StatCard title="Finalized prescriptions" value={patientSummary?.totalPrescriptions || 0} icon={FiFileText} color="bg-[rgba(42,15,46,0.52)]" /><StatCard title="Pending payments" value={patientSummary?.pendingPayments || 0} icon={FiCreditCard} color="bg-[rgba(42,15,46,0.52)]" /></div><div className="bg-white/70 rounded-2xl p-6 shadow mb-6"><h2 className="text-xl font-bold mb-3">Next appointment</h2>{next ? <p>{next.date} {next.time} · {next.status} · Doctor {next.doctorPhno || 'To be assigned'}</p> : <p className="text-gray-600">No upcoming appointments.</p>}</div><div className="flex gap-3"><Link className="px-4 py-3 rounded-lg bg-gray-900 text-white" to="/appointments">Book appointment</Link><Link className="px-4 py-3 rounded-lg border" to="/medical-records">Medical records</Link><Link className="px-4 py-3 rounded-lg border" to="/payments">Payments</Link></div></div></div>;
   }
 
   return (
@@ -124,33 +124,33 @@ const DashboardPage = () => {
             title="Today's Appointments"
             value={analytics.todayAppointments}
             icon={FiCalendar}
-            color="bg-[rgba(31,31,46,0.52)]"
+            color="bg-[rgba(42,15,46,0.52)]"
           />
 
           <StatCard
             title="Monthly Appointments"
             value={analytics.monthlyAppointments}
             icon={FiTrendingUp}
-            color="bg-[rgba(31,31,46,0.52)]"
+            color="bg-[rgba(42,15,46,0.52)]"
           />
 
           <StatCard
             title="Total Patients"
             value={analytics.totalPatients}
             icon={FiUsers}
-            color="bg-[rgba(31,31,46,0.52)]"
+            color="bg-[rgba(42,15,46,0.52)]"
           />
 
           <StatCard
             title="Recurring Patients"
             value={`${analytics.recurringPatientPercentage}%`}
             icon={FiCheckCircle}
-            color="bg-[rgba(31,31,46,0.52)]"
+            color="bg-[rgba(42,15,46,0.52)]"
           />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 bg-[rgba(225,210,232,0.72)] backdrop-blur-md rounded-xl p-6 shadow-lg border border-white/20">
+          <div className="lg:col-span-2 bg-[rgba(255,255,255,0.62)] backdrop-blur-md rounded-xl p-6 shadow-lg border border-white/20">
             <h2 className="text-xl font-bold text-gray-900 mb-6">
               Appointment Trends
             </h2>
